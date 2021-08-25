@@ -2504,6 +2504,271 @@ RECOG.SLn_UpStep := function(w)
   return w;
 end;
 
+
+#################################################################################
+################################# Ducs Code #####################################
+#################################################################################
+
+# TODO: Use this for the constructive recognition of SL(2,q)
+
+# Code has been written by Duc Khuat during his Bachelors thesis
+# This partly implements an algorithm based on the paper ”Constructive Recognition of SL(2, q)” by Leedham Green and E. A. O’Brien.
+# For q being a p-power, the algorithm can only be applied to representations where the degree is smaller than p.
+
+
+## computes for an element of SL(2,q) its representation in the n-th symmetric power
+## F is the field
+## n-th symmetric power
+## A element of SL(2,q)
+## return : Matrix of dimension n+1 corresponding to the action of SL(2,q) on T_n represented in the basis ( x^n, ...., y^n)
+RECOG.SymPowRepSL2 :=function(F,n, A)
+    local res,i,t,k,sum;
+    res := IdentityMat(n+1,F);
+    for i in [0..n] do
+        for t in [0..n] do
+            sum :=0;
+            for k in [0..i] do
+                if n-i-(t-k) > -1 and t-k > -1 then
+                    sum:= sum + Binomial(n-i,t-k)*Binomial(i,k)* (A[1][1])^(t-k)*(A[2][1])^k*(A[1][2])^(n -i -(t-k))*(A[2][2])^(i-k);
+                fi;
+            od;
+            res[i+1][n-t+1]:= sum;
+        od;
+    od;
+    return res;
+end;;
+
+
+
+## randomly looks for an element of order q-1.
+##input:
+## G the group where we look randomly for an element of order n.
+## n the order of g.
+## return g an element with order n, and the number of tries.
+RECOG.RandomElementOfOrder:= function(G, n)
+    local nrTries ,g; nrTries := 0;
+    while nrTries < 1000 do
+        g := PseudoRandom(G);
+        if (Order(g) = n) then
+            return [g, nrTries];
+        fi;
+        nrTries := nrTries +1;
+    od;
+    ####### Added by Daniel Rademacher #######
+    return ["fail"];
+    ##########################################
+    ErrorNoReturn ( " No element of order ", n, " has been found.\n");
+end ;;
+
+
+
+## z^r is the eigenvalue of g on natural module.
+## find the unique (up to multiplication of -1) element in Z_q-1, to obtain the expected set of exponents, namely {-n, -n+2, ..., n-2, n }.
+##input:
+## g has order q-1 and q-1 eigenvectors.
+## E is the set of exponent of eigenvalues in respect to a fixed primitve element of the field ## F the underlying field F of order q.
+## r in the unit group of Z_{q-1} such that E*(r^{-1}) = { -s,-s+2, ..., s-2,s}
+## return M matrix with eigenvectors as rows such that the i-th row is the eigenvector to -s + 2(i-1) for i =1 , ..., s+1.
+RECOG.OrderEigenvectors := function(g , E ,F, r)
+    local
+    i, # every row of M.
+    s, # Eigenvector of g
+    M, # Output Matrix
+    EVs, # Eigenvectors of g.
+    z
+    ;
+    z:= PrimitiveElement(F);
+    M := [];
+    EVs := Eigenvectors(F,g);
+    for i in [ 1 .. DimensionsMat(g)[1]] do
+        for s in EVs do
+            if s*g = (z^(E[i]*r))*s then
+                M[i] := s;
+            fi;
+        od;
+    od;
+    return M;
+end;;
+
+
+
+## find k such that List([0..n], x -> (n-2*x) mod (q-1)) * k = E.
+## this k is unique, up to adding (q-1) multiples.
+## input:
+## E is the set of exponent of eigenvalues in respect to a fixed primitve element of the field
+## n the n-th symmetric power.
+## q the order of the underlying field.
+## return k such that E = k * {-s,-s+2,..., s-2, s}.
+## Note: k is unique up to sign for the considered cases.
+RECOG.EVNatRep := function(E,n,q)
+    local k,l ,res, Exp;
+    res := 0;
+    Exp:=List([0..n], x -> (n-2*x) mod (q-1));
+    for k in PrimeResidues(q-1) do
+        l := OrderMod(k,q-1)-1; # inverse of k in Z_q-1.
+        if Set(E*(k^l) mod (q-1)) = Set(Exp) then
+            res := k;
+            break;
+        fi;
+    od;
+    return res;
+end;;
+
+
+
+## Symmetric Power Basis ###
+## representation of SL(2,q) in GL(T_n) for n <p.
+## find an element g having N distinct eigenvalues;
+## if G is symmetric power of SL(2, q) n<p.
+## find a geometric progression ; order eigenspaces to give ## a basis exhibiting diagonalisation of g.
+##input:
+## G n-th symmetric power of SL(2,q) n<p.
+## return : Basis of the form (x^n, x^(n-1)y, ...,y^n) and the corresponding element g.
+
+RECOG.SymmetricPowerBasis:= function (G)
+    local F,z,q,p,n, #casual variables.
+    k,               #z^k is eigenvalue of g on x.
+    M,               # returned basis ( x^n,..., y^n)
+    Ek,              #exponents of eigenvalues of g to fixed z.
+    g,               #order q-1
+    h,               # <g,h> = G. And h conjugated to g.
+    con ,            # random conjugation element
+    i,               # iterating through columns
+    mu_i ,           # coefficients of basis element
+    abZero ,         # if ab = 0 we take the last row, if ab not zero, we takte the first row of h.
+    ab,              # coefficents to
+    mu_bet           # coefficents to
+    ;
+    F := FieldOfMatrixGroup(G);
+    z:= PrimitiveElement(F);
+    n := DimensionsMat(PseudoRandom(G))[1] -1;
+    q := Size(F);
+    p := Characteristic(F);
+    k :=1;
+    if q < 6 or ((p mod 2 = 1) and q = p and p > 6 and n > (p-7)/2 and (not (p = 13 and n =4) )) then
+        ErrorNoReturn (" Exceptional Case , use another method ");
+    fi;
+    if (Size(PseudoRandom(G)) mod 2 = 0) then
+        g := RECOG.RandomElementOfOrder(G,q-1)[1];
+    else
+        g:= RECOG.RandomElementOfOrder(G,(q-1)/2)[1];
+    fi;
+    ####### Added by me #######
+    if g = "fail" then
+        return ["fail"];
+    fi;
+    ###########################
+    Ek:= List(Eigenvalues(F,g), x -> LogFFE(x,z));
+    k := RECOG.EVNatRep(Ek,n,q);
+    M:= RECOG.OrderEigenvectors(g,List([0..n], x -> (n-2*x) mod (q-1) ), F, k);
+    ####### Added by me #######
+    if M = [] then
+        return ["fail"];
+    fi;
+    ###########################
+    #correct coefficients of ( x^(n-2)y^2,..,y^n)
+    con := IdentityMat(n+1,F);
+    while g*g^con = g^con*g do
+        con:= PseudoRandom(G);
+    od;
+    h := M*g^con*M^(-1); # <g,h> = G.
+    if not (h[1] in Subspace(VectorSpace(F,g), [IdentityMat(n+1,F)[1]]) or h[1] in Subspace(VectorSpace(F,g), [IdentityMat(n+1,F)[n+1] ])) then
+        abZero :=1;
+    else
+        abZero := n+1;
+    fi;
+    ab := h[abZero][1] / (n^(-1)* h[abZero][2]); mu_bet := z^0;
+    for i in [2..n] do
+        mu_i := mu_bet*Binomial(n,i-1)^(-1)*ab^(-1)* h[abZero][i] /(Binomial(n,i)^(-1)*h[abZero][i+1]);
+        mu_bet := mu_i;
+        M[i+1]:= mu_i^(-1)*M[i+1];
+    od;
+    return [M,g];
+end ;;
+
+
+
+## For a symmetric power G and elm of G construct image in PSL(2,q).
+## input: G   symmetric power of SL(2,q) of degree n < p.
+##        elm   arbitrary matrix in G.
+##        Trafo   the basis of the form (x^n, ..., y^n) for some element of order q-1 and eigenvectors x and y on the natrual module of SL(2,q).
+## return: image of elm in PSL(2,q) for one possible homomorphism of
+RECOG.HomToPSL := function (G, elm, Trafo, nOdd)
+    local
+    F, # field of matrix group
+    n, # degree of the symmetric power
+    z, # primitives element of the field
+    M, # the basis of the form (x^n,..., y^n)
+    h, # elm represented in M
+    k, # exponend of a^2 or d^2
+    ba,ca,da,a2,a,cd,bd,d2,d,bc,c2,c, #quotients ba = b/a.
+    V;
+    F:= FieldOfMatrixGroup(G); z:= PrimitiveElement(F);
+    M :=Trafo;
+    n:= Size(M)-1;
+    h := M * elm * M^(-1);
+    V:= VectorSpace(F,M); # equals F^(n+1)
+    if not h[1] in Subspace(V,[IdentityMat(n+1, F)[n+1]]) then #check if a=0
+        ba := (h[1][2]*n^(-1))/ h[1][1];
+        ca := h[2][1]/ h[1][1];
+        da := h[2][2]/h[1][1] - (n-1)*ba*ca; a2 :=1/ (da - ba*ca); k:=LogFFE(a2,z);
+        if nOdd then
+            a := h[1][1]/(a2)^(QuoInt(n,2));
+        elif k mod 2 = 0 then
+            a := z^(k/2);
+        else
+            ErrorNoReturn("Something is wrong.");
+        fi;
+        return [[a,ba*a],[ca*a,da*a]];
+    elif not h[n+1] in Subspace(V,[IdentityMat(n+1,F)[1] ]) then #check if d =0
+        cd := (h[n+1][n]*n^(-1))/h[n+1][n+1]; bd := h[n][n+1] / h[n+1][n+1];
+        d2 :=1 / ( - bd * cd);
+        k := LogFFE(d2,z);
+        if nOdd then
+            d := h[n+1][n+1] / (d2)^(QuoInt(n,2));
+            elif k mod 2 = 0 then d := z^(k/2);
+        else
+            ErrorNoReturn("Something is wrong.");
+        fi;
+        return [[0,bd*d],[cd*d,d]];
+    else
+        #if a=d=0
+        bc := h[1][n+1]/ h[2][n]; c2 := -(bc)^(-1);
+        k := LogFFE(c2,z);
+        if nOdd then
+            c := h[n+1][1] / (c2)^(QuoInt(n,2));
+        elif k mod 2 = 0 then
+            c := z^(k/2);
+        else
+            ErrorNoReturn("Something is wrong.");
+        fi;
+        return [[0,bc*c],[c,0]];
+    fi;
+end;;
+
+
+
+## MAIN FUNCTION
+## G n-th symmetric power of SL(2,q) in GL(T_n) for n < p.
+## return [homomorphism from G to PSL(2,q), homomorphism from SL(2,q) to G]
+RECOG.RecTest := function(G)
+    local Trafo ,d, F;
+    Trafo:= RECOG.SymmetricPowerBasis(G)[1];
+    if Trafo = "fail" then
+        return fail;
+    fi;
+    F:= FieldOfMatrixGroup(G); # underlying field
+    d:= Size(PseudoRandom(G))-1; # d-th symmetric power
+    return [x-> RECOG.HomToPSL(G,x,Trafo, d mod 2 = 1), x->Trafo^(-1)*RECOG.SymPowRepSL2(F,d,x)*Trafo];
+end;;
+
+
+
+#################################################################################
+#################################################################################
+#################################################################################
+
+
 # RECOG.MakeSLSituation := function(p,e,n,d)
 #   local a,q,r;
 #   q := p^e;
