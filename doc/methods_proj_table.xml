@@ -1,0 +1,137 @@
+<Table Align="|l|l|l|l|">
+<Caption>Projective group find homomorphism methods</Caption>
+<HorLine/>
+<Row>
+<Item>3000</Item>
+<Item><C>TrivialProjectiveGroup</C></Item>
+<Item>check if all generators are scalar multiples of the identity matrix</Item>
+<Item><Ref Subsect="TrivialProjectiveGroup"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>1300</Item>
+<Item><C>ProjDeterminant</C></Item>
+<Item>find homomorphism to non-zero scalars mod d-th powers</Item>
+<Item><Ref Subsect="ProjDeterminant"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>1250</Item>
+<Item><C>FewGensAbelian</C></Item>
+<Item>if very few generators, check IsAbelian and if yes, do KnownNilpotent</Item>
+<Item><Ref Subsect="FewGensAbelian"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>1200</Item>
+<Item><C>ReducibleIso</C></Item>
+<Item>use MeatAxe to find a composition series, do base change</Item>
+<Item><Ref Subsect="ReducibleIso"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>1100</Item>
+<Item><C>NotAbsolutelyIrred</C></Item>
+<Item>write over a bigger field with smaller degree</Item>
+<Item><Ref Subsect="NotAbsolutelyIrred"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>1050</Item>
+<Item><C>ClassicalNatural</C></Item>
+<Item>check whether it is a classical group in its natural representation</Item>
+<Item><Ref Subsect="ClassicalNatural"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>1000</Item>
+<Item><C>Subfield</C></Item>
+<Item>write over a smaller field with same degree</Item>
+<Item><Ref Subsect="Subfield"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>900</Item>
+<Item><C>C3C5</C></Item>
+<Item>compute a normal subgroup of derived and resolve C3 and C5</Item>
+<Item><Ref Subsect="C3C5"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>850</Item>
+<Item><C>C6</C></Item>
+<Item>find either an (imprimitive) action or a symplectic one</Item>
+<Item><Ref Subsect="C6"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>840</Item>
+<Item><C>D247</C></Item>
+<Item>play games to find a normal subgroup</Item>
+<Item><Ref Subsect="D247"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>820</Item>
+<Item><C>SporadicsByOrders</C></Item>
+<Item>generate a few random elements and compute the proj. orders</Item>
+<Item><Ref Subsect="SporadicsByOrders"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>810</Item>
+<Item><C>AltSymBBByDegree</C></Item>
+<Item>try BB recognition for dim+1 and/or dim+2 if sensible</Item>
+<Item><Ref Subsect="AltSymBBByDegree"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>800</Item>
+<Item><C>Tensor</C></Item>
+<Item>find a tensor decomposition</Item>
+<Item><Ref Subsect="Tensor"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>700</Item>
+<Item><C>FindElmOfEvenNormal</C></Item>
+<Item>find D2, D4 or D7 by finding an element of an even normal subgroup</Item>
+<Item><Ref Subsect="FindElmOfEvenNormal"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>600</Item>
+<Item><C>LowIndex</C></Item>
+<Item>find an (imprimitive) action on subspaces</Item>
+<Item><Ref Subsect="LowIndex"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>550</Item>
+<Item><C>ComputeSimpleSocle</C></Item>
+<Item>compute simple socle of almost simple group</Item>
+<Item><Ref Subsect="ComputeSimpleSocle"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>500</Item>
+<Item><C>ThreeLargeElOrders</C></Item>
+<Item>look at three large element orders</Item>
+<Item><Ref Subsect="ThreeLargeElOrders"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>400</Item>
+<Item><C>LieTypeNonConstr</C></Item>
+<Item>do non-constructive recognition of Lie type groups</Item>
+<Item><Ref Subsect="LieTypeNonConstr"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>100</Item>
+<Item><C>StabilizerChain</C></Item>
+<Item>last resort: compute a stabilizer chain (projectively)</Item>
+<Item><Ref Subsect="StabilizerChain"/></Item>
+</Row>
+<HorLine/>
+</Table>

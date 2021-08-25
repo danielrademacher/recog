@@ -1,0 +1,340 @@
+#SIXFORMAT  GapDocGAP
+HELPBOOKINFOSIXTMP := rec(
+encoding := "UTF-8",
+bookname := "recog",
+entries :=
+[ [ "Title page", ".", [ 0, 0, 0 ], 1, 1, "title page", "X7D2C85EC87DD46E5" ],
+  [ "Copyright", ".-1", [ 0, 0, 1 ], 125, 2, "copyright", "X81488B807F2A1CF1" 
+     ], 
+  [ "Table of Contents", ".-2", [ 0, 0, 2 ], 133, 3, "table of contents", 
+      "X8537FEB07AF2BEC8" ], 
+  [ "\033[1X\033[33X\033[0;-2YIntroduction\033[133X\033[101X", "1", 
+      [ 1, 0, 0 ], 1, 4, "introduction", "X7DFB63A97E67C0A1" ], 
+  [ "\033[1X\033[33X\033[0;-2YPhilosophy\033[133X\033[101X", "1.1", 
+      [ 1, 1, 0 ], 4, 4, "philosophy", "X873C99678745ABAF" ], 
+  [ "\033[1X\033[33X\033[0;-2YOverview over this manual\033[133X\033[101X", 
+      "1.2", [ 1, 2, 0 ], 19, 4, "overview over this manual", 
+      "X786BACDB82918A65" ], 
+  [ "\033[1X\033[33X\033[0;-2YFeedback\033[133X\033[101X", "1.3", 
+      [ 1, 3, 0 ], 40, 4, "feedback", "X80D704CC7EBFDF7A" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2YInstallation of the \033[5Xrecog\033[105X\033[101\
+X\027\033[1X\027-Package\033[133X\033[101X", "2", [ 2, 0, 0 ], 1, 5, 
+      "installation of the recog-package", "X831000C78574191D" ], 
+  [ "\033[1X\033[33X\033[0;-2YGroup Recognition\033[133X\033[101X", "3", 
+      [ 3, 0, 0 ], 1, 6, "group recognition", "X7F73983582251807" ], 
+  [ "\033[1X\033[33X\033[0;-2YThe recursive procedure\033[133X\033[101X", 
+      "3.1", [ 3, 1, 0 ], 46, 6, "the recursive procedure", 
+      "X81E31E377B16CF39" ], 
+  [ "\033[1X\033[33X\033[0;-2YRecognition info records\033[133X\033[101X", 
+      "3.2", [ 3, 2, 0 ], 309, 11, "recognition info records", 
+      "X7D7B4A3D81878179" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2YOther components of recognition info records\033[\
+133X\033[101X", "3.2-33", [ 3, 2, 33 ], 733, 18, 
+      "other components of recognition info records", "X800B9BBE82F24C49" ], 
+  [ "\033[1X\033[33X\033[0;-2YMethods to find homomorphisms\033[133X\033[101X"
+        , "3.3", [ 3, 3, 0 ], 749, 19, "methods to find homomorphisms", 
+      "X8577717D85D631C2" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2YConventions for the recognition of permutation gr\
+oups\033[133X\033[101X", "3.4", [ 3, 4, 0 ], 909, 21, 
+      "conventions for the recognition of permutation groups", 
+      "X7B2941D57B361990" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2YConventions for the recognition of matrix groups\\
+033[133X\033[101X", "3.5", [ 3, 5, 0 ], 914, 21, 
+      "conventions for the recognition of matrix groups", "X8676A21280D842DB" 
+     ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2YConventions for the recognition of projective gro\
+ups\033[133X\033[101X", "3.6", [ 3, 6, 0 ], 921, 21, 
+      "conventions for the recognition of projective groups", 
+      "X835738DA86087BB3" ], 
+  [ "\033[1X\033[33X\033[0;-2YMethod Selection\033[133X\033[101X", "4", 
+      [ 4, 0, 0 ], 1, 22, "method selection", "X8058CC8187162644" ], 
+  [ "\033[1X\033[33X\033[0;-2YWhat are methods?\033[133X\033[101X", "4.1", 
+      [ 4, 1, 0 ], 28, 22, "what are methods?", "X7F89FF55818F1139" ], 
+  [ "\033[1X\033[33X\033[0;-2YHow methods are called\033[133X\033[101X", 
+      "4.2", [ 4, 2, 0 ], 93, 23, "how methods are called", 
+      "X83FCCBCA78F608E1" ], 
+  [ "\033[1X\033[33X\033[0;-2YAfter successful recognition\033[133X\033[101X",
+      "5", [ 5, 0, 0 ], 1, 26, "after successful recognition", 
+      "X851A3F04786123D5" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2YFunctions and methods for recognition info record\
+s\033[133X\033[101X", "5.1", [ 5, 1, 0 ], 58, 27, 
+      "functions and methods for recognition info records", 
+      "X803CC158789AADDA" ], 
+  [ "\033[1X\033[33X\033[0;-2YMethods for recognition\033[133X\033[101X", 
+      "6", [ 6, 0, 0 ], 1, 28, "methods for recognition", "X78C5295B86AD0C66" 
+     ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2YMethods for permutation groups\033[133X\033[101X"
+        , "6.1", [ 6, 1, 0 ], 4, 28, "methods for permutation groups", 
+      "X829A2F96860513F2" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XTrivialPermGroup\033[110X\033[101X\027\\
+033[1X\027\033[133X\033[101X", "6.1-1", [ 6, 1, 1 ], 38, 28, 
+      "trivialpermgroup", "X8188D7BF85B56F10" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XThrowAwayFixedPoints\033[110X\033[101X\\
+027\033[1X\027\033[133X\033[101X", "6.1-2", [ 6, 1, 2 ], 47, 28, 
+      "throwawayfixedpoints", "X8236A4817FA037E2" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XPcgs\033[110X\033[101X\027\033[1X\027\\
+033[133X\033[101X", "6.1-3", [ 6, 1, 3 ], 58, 29, "pcgs", "X84C3750C7A4EEC34" 
+     ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XVeryFewPoints\033[110X\033[101X\027\033[1\
+X\027\033[133X\033[101X", "6.1-4", [ 6, 1, 4 ], 66, 29, "veryfewpoints", 
+      "X7866E53B82FDB348" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XNontransitive\033[110X\033[101X\027\033[1\
+X\027\033[133X\033[101X", "6.1-5", [ 6, 1, 5 ], 75, 29, "nontransitive", 
+      "X83C651E58239EEAF" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XGiant\033[110X\033[101X\027\033[1X\027\\
+033[133X\033[101X", "6.1-6", [ 6, 1, 6 ], 82, 29, "giant", 
+      "X7F46D8727850585D" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XImprimitive\033[110X\033[101X\027\033[1X\\
+027\033[133X\033[101X", "6.1-7", [ 6, 1, 7 ], 93, 29, "imprimitive", 
+      "X8757E1C37F03A49D" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XSnkSetswrSr\033[110X\033[101X\027\033[1X\\
+027\033[133X\033[101X", "6.1-8", [ 6, 1, 8 ], 107, 29, "snksetswrsr", 
+      "X80564C3B86DC3740" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XStabChain\033[110X\033[101X\027\033[1X\\
+027\033[133X\033[101X", "6.1-9", [ 6, 1, 9 ], 118, 30, "stabchain", 
+      "X834E9DFF7DC949DE" ], 
+  [ "\033[1X\033[33X\033[0;-2YMethods for matrix groups\033[133X\033[101X", 
+      "6.2", [ 6, 2, 0 ], 125, 30, "methods for matrix groups", 
+      "X829BA50B82FEC109" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XTrivialMatrixGroup\033[110X\033[101X\027\\
+033[1X\027\033[133X\033[101X", "6.2-1", [ 6, 2, 1 ], 152, 30, 
+      "trivialmatrixgroup", "X8205711B8077D1D6" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XKnownStabilizerChain\033[110X\033[101X\\
+027\033[1X\027\033[133X\033[101X", "6.2-2", [ 6, 2, 2 ], 158, 30, 
+      "knownstabilizerchain", "X7B2C182B7898BC45" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XDiagonalMatrices\033[110X\033[101X\027\\
+033[1X\027\033[133X\033[101X", "6.2-3", [ 6, 2, 3 ], 163, 30, 
+      "diagonalmatrices", "X7A9F8CA181F6412D" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XFewGensAbelian\033[110X\033[101X\027\033[\
+1X\027\033[133X\033[101X", "6.2-4", [ 6, 2, 4 ], 169, 30, "fewgensabelian", 
+      "X78797CF584658CEC" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XReducibleIso\033[110X\033[101X\027\033[1X\
+\027\033[133X\033[101X", "6.2-5", [ 6, 2, 5 ], 174, 30, "reducibleiso", 
+      "X811FC944788D9839" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XBlockLowerTriangular\033[110X\033[101X\\
+027\033[1X\027\033[133X\033[101X", "6.2-6", [ 6, 2, 6 ], 191, 31, 
+      "blocklowertriangular", "X81F74235823352B5" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XBlockDiagonal\033[110X\033[101X\027\033[1\
+X\027\033[133X\033[101X", "6.2-7", [ 6, 2, 7 ], 207, 31, "blockdiagonal", 
+      "X857BF1317CAAF260" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XGoProjective\033[110X\033[101X\027\033[1X\
+\027\033[133X\033[101X", "6.2-8", [ 6, 2, 8 ], 227, 31, "goprojective", 
+      "X7A1D99F67E62B1D7" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XBlockScalar\033[110X\033[101X\027\033[1X\\
+027\033[133X\033[101X", "6.2-9", [ 6, 2, 9 ], 237, 31, "blockscalar", 
+      "X8795A42285A332BB" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XLowerLeftPGroup\033[110X\033[101X\027\\
+033[1X\027\033[133X\033[101X", "6.2-10", [ 6, 2, 10 ], 246, 32, 
+      "lowerleftpgroup", "X84E09FCF8527D74A" ], 
+  [ "\033[1X\033[33X\033[0;-2YMethods for projective groups\033[133X\033[101X"
+        , "6.3", [ 6, 3, 0 ], 255, 32, "methods for projective groups", 
+      "X867550F684F795AE" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XTrivialProjectiveGroup\033[110X\033[101X\\
+027\033[1X\027\033[133X\033[101X", "6.3-1", [ 6, 3, 1 ], 307, 32, 
+      "trivialprojectivegroup", "X817D05EB7A8764E3" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XProjDeterminant\033[110X\033[101X\027\\
+033[1X\027\033[133X\033[101X", "6.3-2", [ 6, 3, 2 ], 314, 32, 
+      "projdeterminant", "X850864887D7F193E" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XReducibleIso\033[110X\033[101X\027\033[1X\
+\027\033[133X\033[101X", "6.3-3", [ 6, 3, 3 ], 322, 33, "reducibleiso", 
+      "X811FC944788D9839" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XBlocksModScalars\033[110X\033[101X\027\\
+033[1X\027\033[133X\033[101X", "6.3-4", [ 6, 3, 4 ], 328, 33, 
+      "blocksmodscalars", "X8605DA5E85DFACDC" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XNotAbsolutelyIrred\033[110X\033[101X\027\\
+033[1X\027\033[133X\033[101X", "6.3-5", [ 6, 3, 5 ], 344, 33, 
+      "notabsolutelyirred", "X83E6AD6583DB7080" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XSubfield\033[110X\033[101X\027\033[1X\\
+027\033[133X\033[101X", "6.3-6", [ 6, 3, 6 ], 356, 33, "subfield", 
+      "X7FE1FA217A08DCE5" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XDerived\033[110X\033[101X\027\033[1X\027\\
+033[133X\033[101X", "6.3-7", [ 6, 3, 7 ], 377, 33, "derived", 
+      "X84B342787B9BD299" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XLowIndex\033[110X\033[101X\027\033[1X\\
+027\033[133X\033[101X", "6.3-8", [ 6, 3, 8 ], 392, 34, "lowindex", 
+      "X810B7F36818D626B" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XC6\033[110X\033[101X\027\033[1X\027\033[1\
+33X\033[101X", "6.3-9", [ 6, 3, 9 ], 401, 34, "c6", "X7E484B8F83849B49" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XTensor\033[110X\033[101X\027\033[1X\027\\
+033[133X\033[101X", "6.3-10", [ 6, 3, 10 ], 411, 34, "tensor", 
+      "X820882B88196022E" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XTwoLargeElOrders\033[110X\033[101X\027\\
+033[1X\027\033[133X\033[101X", "6.3-11", [ 6, 3, 11 ], 422, 34, 
+      "twolargeelorders", "X80EBB72481FCA144" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XStabilizerChain\033[110X\033[101X\027\\
+033[1X\027\033[133X\033[101X", "6.3-12", [ 6, 3, 12 ], 433, 34, 
+      "stabilizerchain", "X80747C9A7FEB36BE" ], 
+  [ 
+      "\033[1X\033[33X\033[0;-2Y\033[10XBlockScalarProj\033[110X\033[101X\027\\
+033[1X\027\033[133X\033[101X", "6.3-13", [ 6, 3, 13 ], 442, 34, 
+      "blockscalarproj", "X863E0A1D7D7FEE04" ], 
+  [ "\033[1X\033[33X\033[0;-2YExamples\033[133X\033[101X", "7", [ 7, 0, 0 ], 
+      1, 35, "examples", "X7A489A5D79DA9E5C" ], 
+  [ "Bibliography", "bib", [ "Bib", 0, 0 ], 1, 36, "bibliography", 
+      "X7A6F98FD85F02BFE" ], 
+  [ "References", "bib", [ "Bib", 0, 0 ], 1, 36, "references", 
+      "X7A6F98FD85F02BFE" ], 
+  [ "Index", "ind", [ "Ind", 0, 0 ], 1, 37, "index", "X83A0356F839C696F" ], 
+  [ "\033[5Xrecog\033[105X", "2.", [ 2, 0, 0 ], 1, 5, "recog", 
+      "X831000C78574191D" ], 
+  [ "\033[2XRecogniseGeneric\033[102X", "3.1-1", [ 3, 1, 1 ], 135, 8, 
+      "recognisegeneric", "X7BFEB34483548A89" ], 
+  [ "\033[2XRecognizeGeneric\033[102X", "3.1-1", [ 3, 1, 1 ], 135, 8, 
+      "recognizegeneric", "X7BFEB34483548A89" ], 
+  [ "\033[2XRecognisePermGroup\033[102X", "3.1-2", [ 3, 1, 2 ], 160, 8, 
+      "recognisepermgroup", "X84338F037B91CDD0" ], 
+  [ "\033[2XRecognizePermGroup\033[102X", "3.1-2", [ 3, 1, 2 ], 160, 8, 
+      "recognizepermgroup", "X84338F037B91CDD0" ], 
+  [ "\033[2XRecogniseMatrixGroup\033[102X", "3.1-3", [ 3, 1, 3 ], 171, 8, 
+      "recognisematrixgroup", "X788DCF6A7D9E80BD" ], 
+  [ "\033[2XRecognizeMatrixGroup\033[102X", "3.1-3", [ 3, 1, 3 ], 171, 8, 
+      "recognizematrixgroup", "X788DCF6A7D9E80BD" ], 
+  [ "\033[2XRecogniseProjectiveGroup\033[102X", "3.1-4", [ 3, 1, 4 ], 181, 9, 
+      "recogniseprojectivegroup", "X841176DD7BA1CAA0" ], 
+  [ "\033[2XRecognizeProjectiveGroup\033[102X", "3.1-4", [ 3, 1, 4 ], 181, 9, 
+      "recognizeprojectivegroup", "X841176DD7BA1CAA0" ], 
+  [ "\033[2XRecogniseGroup\033[102X", "3.1-5", [ 3, 1, 5 ], 195, 9, 
+      "recognisegroup", "X853B4EE27AF57CD3" ], 
+  [ "\033[2XRecognizeGroup\033[102X", "3.1-5", [ 3, 1, 5 ], 195, 9, 
+      "recognizegroup", "X853B4EE27AF57CD3" ], 
+  [ "\033[2XFindHomDbPerm\033[102X", "3.1-6", [ 3, 1, 6 ], 208, 9, 
+      "findhomdbperm", "X836B50947A46B1A5" ], 
+  [ "\033[2XFindHomMethodsPerm\033[102X", "3.1-7", [ 3, 1, 7 ], 219, 9, 
+      "findhommethodsperm", "X7A94720080D344DA" ], 
+  [ "\033[2XSLPforElementFuncsPerm\033[102X", "3.1-8", [ 3, 1, 8 ], 228, 9, 
+      "slpforelementfuncsperm", "X7B5561D187242287" ], 
+  [ "\033[2XFindHomDbMatrix\033[102X", "3.1-9", [ 3, 1, 9 ], 237, 10, 
+      "findhomdbmatrix", "X7CA5F5FA7E850885" ], 
+  [ "\033[2XFindHomMethodsMatrix\033[102X", "3.1-10", [ 3, 1, 10 ], 248, 10, 
+      "findhommethodsmatrix", "X79B60CEF8292F142" ], 
+  [ "\033[2XSLPforElementFuncsMatrix\033[102X", "3.1-11", [ 3, 1, 11 ], 256, 
+      10, "slpforelementfuncsmatrix", "X7A2E7DF67F4949C8" ], 
+  [ "\033[2XFindHomDbProjective\033[102X", "3.1-12", [ 3, 1, 12 ], 265, 10, 
+      "findhomdbprojective", "X7A4F8342854507E3" ], 
+  [ "\033[2XFindHomMethodsProjective\033[102X", "3.1-13", [ 3, 1, 13 ], 276, 
+      10, "findhommethodsprojective", "X7D796A2179E9026A" ], 
+  [ "\033[2XSLPforElementFuncsProjective\033[102X", "3.1-14", [ 3, 1, 14 ], 
+      285, 10, "slpforelementfuncsprojective", "X7F6FCC4F81ACF20F" ], 
+  [ "\033[2XTryFindHomMethod\033[102X", "3.1-15", [ 3, 1, 15 ], 294, 11, 
+      "tryfindhommethod", "X7AD4A7168016DF8F" ], 
+  [ "\033[2XRecognitionInfoFamily\033[102X", "3.2-1", [ 3, 2, 1 ], 315, 11, 
+      "recognitioninfofamily", "X820267927AB548EC" ], 
+  [ "\033[2XIsRecognitionInfo\033[102X", "3.2-2", [ 3, 2, 2 ], 320, 11, 
+      "isrecognitioninfo", "X836958B87C783165" ], 
+  [ "\033[2XIsLeaf\033[102X", "3.2-3", [ 3, 2, 3 ], 330, 11, "isleaf", 
+      "X8469BB658377FD92" ], 
+  [ "\033[2XIsReady\033[102X", "3.2-4", [ 3, 2, 4 ], 340, 12, "isready", 
+      "X7D6CEF0178ED73A7" ], 
+  [ "\033[2XGrp\033[102X", "3.2-5", [ 3, 2, 5 ], 353, 12, "grp", 
+      "X7972380780D99B04" ], 
+  [ "\033[2XHomom\033[102X", "3.2-6", [ 3, 2, 6 ], 363, 12, "homom", 
+      "X8273C2FC79FB6543" ], 
+  [ "\033[2XNiceGens\033[102X", "3.2-7", [ 3, 2, 7 ], 373, 12, "nicegens", 
+      "X864194958685AAD7" ], 
+  [ "\033[2Xpregensfac\033[102X", "3.2-8", [ 3, 2, 8 ], 390, 12, 
+      "pregensfac", "X808A01AA869115EC" ], 
+  [ "\033[2XRIFac\033[102X", "3.2-9", [ 3, 2, 9 ], 400, 13, "rifac", 
+      "X85D69105867342C7" ], 
+  [ "\033[2XRIKer\033[102X", "3.2-10", [ 3, 2, 10 ], 412, 13, "riker", 
+      "X85B6D66F7BD0E964" ], 
+  [ "\033[2XRIParent\033[102X", "3.2-11", [ 3, 2, 11 ], 425, 13, "riparent", 
+      "X7C66C89C84F9C6AA" ], 
+  [ "\033[2Xfhmethsel\033[102X", "3.2-12", [ 3, 2, 12 ], 433, 13, 
+      "fhmethsel", "X7ACD6B4C7982B1E3" ], 
+  [ "\033[2Xslpforelement\033[102X", "3.2-13", [ 3, 2, 13 ], 442, 13, 
+      "slpforelement", "X83167779869A3BF5" ], 
+  [ "\033[2XSLPforElement\033[102X", "3.2-14", [ 3, 2, 14 ], 460, 14, 
+      "slpforelement", "X83167779869A3BF5" ], 
+  [ "\033[2XStdPresentation\033[102X", "3.2-15", [ 3, 2, 15 ], 468, 14, 
+      "stdpresentation", "X7FBE4706828964EB" ], 
+  [ "\033[2Xmethodsforfactor\033[102X", "3.2-16", [ 3, 2, 16 ], 475, 14, 
+      "methodsforfactor", "X826BC2BB7D7AD6A9" ], 
+  [ "\033[2Xcalcnicegens\033[102X", "3.2-17", [ 3, 2, 17 ], 495, 14, 
+      "calcnicegens", "X7EFA298E7E4760A0" ], 
+  [ "\033[2XCalcNiceGensGeneric\033[102X", "3.2-18", [ 3, 2, 18 ], 512, 15, 
+      "calcnicegensgeneric", "X78B05A1E78564BBF" ], 
+  [ "\033[2XCalcNiceGensHomNode\033[102X", "3.2-19", [ 3, 2, 19 ], 527, 15, 
+      "calcnicegenshomnode", "X80444E4E8501D0B0" ], 
+  [ "\033[2XCalcNiceGens\033[102X", "3.2-20", [ 3, 2, 20 ], 539, 15, 
+      "calcnicegens", "X7EFA298E7E4760A0" ], 
+  [ "\033[2Xslptonice\033[102X", "3.2-21", [ 3, 2, 21 ], 548, 15, 
+      "slptonice", "X80C2451F805CA06D" ], 
+  [ "\033[2XgensN\033[102X", "3.2-22", [ 3, 2, 22 ], 562, 15, "gensn", 
+      "X7B7E9EAC7AACF8D8" ], 
+  [ "\033[2XfindgensNmeth\033[102X", "3.2-23", [ 3, 2, 23 ], 579, 16, 
+      "findgensnmeth", "X81644C3A8064063F" ], 
+  [ "\033[2XFindKernelRandom\033[102X", "3.2-24", [ 3, 2, 24 ], 602, 16, 
+      "findkernelrandom", "X7DC1D16F807D6895" ], 
+  [ "\033[2XFindKernelDoNothing\033[102X", "3.2-25", [ 3, 2, 25 ], 613, 16, 
+      "findkerneldonothing", "X8244F0DE86C23ECA" ], 
+  [ "\033[2XFindKernelFastNormalClosure\033[102X", "3.2-26", [ 3, 2, 26 ], 
+      623, 17, "findkernelfastnormalclosure", "X87E8AB1B78F60112" ], 
+  [ "\033[2XgensNslp\033[102X", "3.2-27", [ 3, 2, 27 ], 634, 17, "gensnslp", 
+      "X82154EA88011654F" ], 
+  [ "\033[2Ximmediateverification\033[102X", "3.2-28", [ 3, 2, 28 ], 644, 17, 
+      "immediateverification", "X86A101E17F87F01F" ], 
+  [ "\033[2Xforkernel\033[102X", "3.2-29", [ 3, 2, 29 ], 669, 17, 
+      "forkernel", "X87B550967D90B794" ], 
+  [ "\033[2Xforfactor\033[102X", "3.2-30", [ 3, 2, 30 ], 689, 18, 
+      "forfactor", "X7CBBF7FC8200790C" ], 
+  [ "\033[2Xisone\033[102X", "3.2-31", [ 3, 2, 31 ], 709, 18, "isone", 
+      "X814D78347858EC13" ], 
+  [ "\033[2Xisequal\033[102X", "3.2-32", [ 3, 2, 32 ], 721, 18, "isequal", 
+      "X7D0F06047B88E5CD" ], 
+  [ "\033[2XFindHomomorphism\033[102X", "3.3-1", [ 3, 3, 1 ], 779, 19, 
+      "findhomomorphism", "X7FCBB7C686D0B1DF" ], 
+  [ "\033[2XSLPforElementGeneric\033[102X", "3.3-2", [ 3, 3, 2 ], 887, 21, 
+      "slpforelementgeneric", "X7F299344834AAB6E" ], 
+  [ "\033[2XAddMethod\033[102X", "4.1-1", [ 4, 1, 1 ], 82, 23, "addmethod", 
+      "X845DB71C806CADDC" ], 
+  [ "\033[2XCallMethods\033[102X", "4.2-1", [ 4, 2, 1 ], 99, 23, 
+      "callmethods", "X7BC2692183B6C4E6" ], 
+  [ "\033[2XSLPforNiceGens\033[102X", "5.1-1", [ 5, 1, 1 ], 64, 27, 
+      "slpfornicegens", "X82F5B37186B949BF" ], 
+  [ "\033[2X\\in\033[102X", "5.1-2", [ 5, 1, 2 ], 77, 27, "in", 
+      "X87BDB89B7AAFE8AD" ], 
+  [ "\033[2XSize\033[102X", "5.1-3", [ 5, 1, 3 ], 87, 27, "size", 
+      "X858ADA3B7A684421" ], 
+  [ "\033[2XDisplayCompositionFactors\033[102X", "5.1-4", [ 5, 1, 4 ], 96, 
+      27, "displaycompositionfactors", "X80FFBDCD816690E3" ], 
+  [ "\033[5Xrecog\033[105X", "6.", [ 6, 0, 0 ], 1, 28, "recog", 
+      "X78C5295B86AD0C66" ] ]
+);

@@ -1,0 +1,46 @@
+<Table Align="|l|l|l|l|">
+<Caption>Matrix group find homomorphism methods</Caption>
+<HorLine/>
+<Row>
+<Item>3100</Item>
+<Item><C>TrivialMatrixGroup</C></Item>
+<Item>check whether all generators are equal to the identity matrix</Item>
+<Item><Ref Subsect="TrivialMatrixGroup"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>1175</Item>
+<Item><C>KnownStabilizerChain</C></Item>
+<Item>use an already known stabilizer chain for this group</Item>
+<Item><Ref Subsect="KnownStabilizerChain"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>1100</Item>
+<Item><C>DiagonalMatrices</C></Item>
+<Item>check whether all generators are multiples of the identity</Item>
+<Item><Ref Subsect="DiagonalMatrices"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>1050</Item>
+<Item><C>FewGensAbelian</C></Item>
+<Item>if very few generators, check IsAbelian and if yes, do KnownNilpotent</Item>
+<Item><Ref Subsect="FewGensAbelian"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>1000</Item>
+<Item><C>ReducibleIso</C></Item>
+<Item>use the MeatAxe to find invariant subspaces</Item>
+<Item><Ref Subsect="ReducibleIso"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>900</Item>
+<Item><C>GoProjective</C></Item>
+<Item>divide out scalars and recognise projectively</Item>
+<Item><Ref Subsect="GoProjective"/></Item>
+</Row>
+<HorLine/>
+</Table>

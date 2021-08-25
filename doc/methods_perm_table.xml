@@ -1,0 +1,81 @@
+<Table Align="|l|l|l|l|">
+<Caption>Permutation group find homomorphism methods</Caption>
+<HorLine/>
+<Row>
+<Item>300</Item>
+<Item><C>TrivialPermGroup</C></Item>
+<Item>just go through generators and compare to the identity</Item>
+<Item><Ref Subsect="TrivialPermGroup"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>100</Item>
+<Item><C>ThrowAwayFixedPoints</C></Item>
+<Item>try to find a huge amount of (possible internal) fixed points</Item>
+<Item><Ref Subsect="ThrowAwayFixedPoints"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>99</Item>
+<Item><C>FewGensAbelian</C></Item>
+<Item>if very few generators, check IsAbelian and if yes, do KnownNilpotent</Item>
+<Item><Ref Subsect="FewGensAbelian"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>97</Item>
+<Item><C>Pcgs</C></Item>
+<Item>use a Pcgs to calculate a StabChain</Item>
+<Item><Ref Subsect="Pcgs"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>95</Item>
+<Item><C>VeryFewPoints</C></Item>
+<Item>calculate a stabchain if we act on very few points</Item>
+<Item><Ref Subsect="VeryFewPoints"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>90</Item>
+<Item><C>NonTransitive</C></Item>
+<Item>try to find non-transitivity and restrict to orbit</Item>
+<Item><Ref Subsect="NonTransitive"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>80</Item>
+<Item><C>Giant</C></Item>
+<Item>tries to find Sn and An</Item>
+<Item><Ref Subsect="Giant"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>70</Item>
+<Item><C>Imprimitive</C></Item>
+<Item>for a imprimitive permutation group, restricts to block system</Item>
+<Item><Ref Subsect="Imprimitive"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>60</Item>
+<Item><C>SnkSetswrSr</C></Item>
+<Item>tries to find jellyfish</Item>
+<Item><Ref Subsect="SnkSetswrSr"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>55</Item>
+<Item><C>StabilizerChain</C></Item>
+<Item>for a permutation group using a stabilizer chain (genss)</Item>
+<Item><Ref Subsect="StabilizerChain"/></Item>
+</Row>
+<HorLine/>
+<Row>
+<Item>50</Item>
+<Item><C>StabChain</C></Item>
+<Item>for a permutation group using a stabilizer chain</Item>
+<Item><Ref Subsect="StabChain"/></Item>
+</Row>
+<HorLine/>
+</Table>
