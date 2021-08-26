@@ -1,16 +1,16 @@
 #############################################################################
+#
+# Code for the SL seems to work!!!
+#
+#############################################################################
 ##
-##  This file is part of recog, a package for the GAP computer algebra system
-##  which provides a collection of methods for the constructive recognition
-##  of groups.
+##  classicalnatural.gi
+##                                recog package
+##                                                        Max Neunhoeffer
+##                                                            Ákos Seress
 ##
-##  This files's authors include Max Neunhöffer, Ákos Seress.
-##
-##  Copyright of recog belongs to its developers whose names are too numerous
-##  to list here. Please refer to the COPYRIGHT file for details.
-##
-##  SPDX-License-Identifier: GPL-3.0-or-later
-##
+##  Copyright 2006-2009 by the authors.
+##  This file is free software, see license information at the end.
 ##
 ##  Constructive recognition of classical groups in their natural
 ##  representation.
@@ -137,7 +137,7 @@ InstallMethod( Eigenspaces, "for a field and a memory element matrix",
 #       for i in [1..2] do
 #           for j in [1..n] do
 #               w[i] := o[j]*gens[i]-o[j];
-#               if not IsZero(w[i]) then break; fi;
+#               if not(IsZero(w[i])) then break; fi;
 #           od;
 #       od;
 #       return [Group(gens),VectorSpace(GF(q),w)];
@@ -178,7 +178,7 @@ InstallMethod( Eigenspaces, "for a field and a memory element matrix",
 #           for j in [1..3] do
 #               for i in [1..n] do
 #                   w := o[i]*gens[j]-o[i];
-#                   if not IsZero(w) then break; fi;
+#                   if not(IsZero(w)) then break; fi;
 #               od;
 #               # Since y has order y at least one basis vector is moved.
 #               ns[j] := w;
@@ -286,7 +286,7 @@ InstallMethod( Eigenspaces, "for a field and a memory element matrix",
 #   if r.factors[1] <> r.factors[2] then
 #       ev := -Value(r.factors[1],0*Z(q));
 #       ns := NullspaceMat(StripMemory(r.el)-ev*StripMemory(One(y)));
-#       if not IsMutable(ns) then ns := MutableCopyMat(ns); fi;
+#       if not(IsMutable(ns)) then ns := MutableCopyMat(ns); fi;
 #       # this is a 1xn matrix now
 #       ev := -Value(r.factors[2],0*Z(q));
 #       Append(ns,NullspaceMat(StripMemory(r.el)-ev*StripMemory(One(y))));
@@ -295,7 +295,7 @@ InstallMethod( Eigenspaces, "for a field and a memory element matrix",
 #       ev := -Value(r.factors[1],0*Z(q));
 #       ns := NullspaceMat((StripMemory(r.el)
 #                                      -ev*StripMemory(One(y)))^2);
-#       if not IsMutable(ns) then ns := MutableCopyMat(ns); fi;
+#       if not(IsMutable(ns)) then ns := MutableCopyMat(ns); fi;
 #   fi;
 # 
 #   count := 0;
@@ -349,7 +349,7 @@ InstallMethod( Eigenspaces, "for a field and a memory element matrix",
 #     degrees:=List(factors,Degree);
 #     if SortedList(degrees)=[1,1,n-2] then
 #        yy := y^(q^(n-2)-1);
-#        if not IsOne(yy) and IsOne(yy^2) then ready := true; fi;
+#        if not(IsOne(yy)) and IsOne(yy^2) then ready := true; fi;
 #     fi;
 #   until ready;
 #   repeat
@@ -359,13 +359,13 @@ InstallMethod( Eigenspaces, "for a field and a memory element matrix",
 #   i := 1;
 #   while i <= n do
 #     w := o[i]*yy-o[i];
-#     if not IsZero(w) then break; fi;
+#     if not(IsZero(w)) then break; fi;
 #     i := i + 1;
 #   od;
 #   i := 1;
 #   while i <= n do
 #     ww := o[i]*z-o[i];
-#     if not IsZero(ww) then break; fi;
+#     if not(IsZero(ww)) then break; fi;
 #     i := i + 1;
 #   od;
 #   return [Group(z,yy),VectorSpace(GF(2),[w,ww])];
@@ -400,7 +400,7 @@ InstallMethod( Eigenspaces, "for a field and a memory element matrix",
 #      h:=Group(gens);
 #      if q = 4 then
 #        S := StabilizerChain(h);
-#        if not Size(S) in [60480,3*60480] then continue; fi;
+#        if not(Size(S) in [60480,3*60480]) then continue; fi;
 #        pos := Position(degrees,1);
 #        eva := -Value(factors[pos],0*Z(q));
 #        ns := NullspaceMat(StripMemory(y)-eva*One(StripMemory(y)));
@@ -460,9 +460,7 @@ RECOG.FindStdGensUsingBSGS := function(g,stdgens,projective,large)
   l := List(stdgens,x->SiftGroupElementSLP(S,x));
   gens := EmptyPlist(Length(stdgens));
   for i in [1..Length(stdgens)] do
-      if not l[i].isone then
-          return fail;
-      fi;
+      if not l[i].isone then return fail; fi;
       Add(gens,ResultOfStraightLineProgram(l[i].slp,strong));
   od;
   return SLPOfElms(gens);
@@ -471,7 +469,7 @@ end;
 RECOG.ResetSLstd := function(r)
   r.left := One(r.a);
   r.right := One(r.a);
-  if not IsBound(r.cache) then
+  if not(IsBound(r.cache)) then
       r.cache := [EmptyPlist(100),EmptyPlist(100),
                   List([1..r.ext],i->[]),     # rowopcache
                   List([1..r.ext],i->[])];    # colopcache
@@ -545,7 +543,7 @@ RECOG.DoRowOp_SL := function(m,i,j,lambda,std)
   newnew := std.One;
   coeffs := RECOG.FindFFCoeffs(std,lambda);
   for k in [1..std.ext] do
-      if not IsZero(coeffs[k]) then
+      if not(IsZero(coeffs[k])) then
           if IsBound(std.cache[3][k][i]) and
              IsBound(std.cache[3][k][i][j]) then
               new := std.cache[3][k][i][j];
@@ -570,7 +568,7 @@ RECOG.DoRowOp_SL := function(m,i,j,lambda,std)
                   if i > j+1 then new := Getbj(i-j-1) * new; fi;
                   if j > 1 then new := Getai(j-1) * new; fi;
               fi;
-              if not IsBound(std.cache[3][k][i]) then
+              if not(IsBound(std.cache[3][k][i])) then
                   std.cache[3][k][i] := [];
               fi;
               std.cache[3][k][i][j] := new;
@@ -579,7 +577,7 @@ RECOG.DoRowOp_SL := function(m,i,j,lambda,std)
           newnew := new^coeffs[k] * newnew;
       fi;
   od;
-  if m <> false and not IsZero(lambda) then m[i] := m[i] + m[j] * lambda; fi;
+  if m <> false and not(IsZero(lambda)) then m[i] := m[i] + m[j] * lambda; fi;
   return newnew;
 end;
 
@@ -622,7 +620,7 @@ RECOG.DoColOp_SL := function(m,i,j,lambda,std)
   newnew := std.One;
   coeffs := RECOG.FindFFCoeffs(std,lambda);
   for k in [1..std.ext] do
-      if not IsZero(coeffs[k]) then
+      if not(IsZero(coeffs[k])) then
           if IsBound(std.cache[4][k][i]) and
              IsBound(std.cache[4][k][i][j]) then
               new := std.cache[4][k][i][j];
@@ -647,7 +645,7 @@ RECOG.DoColOp_SL := function(m,i,j,lambda,std)
                   if i > j+1 then new := Getbj(i-j-1) * new; fi;
                   if j > 1 then new := Getai(j-1) * new; fi;
               fi;
-              if not IsBound(std.cache[4][k][i]) then
+              if not(IsBound(std.cache[4][k][i])) then
                   std.cache[4][k][i] := [];
               fi;
               std.cache[4][k][i][j] := new;
@@ -656,7 +654,7 @@ RECOG.DoColOp_SL := function(m,i,j,lambda,std)
           newnew := newnew * new^coeffs[k];
       fi;
   od;
-  if m <> false and not IsZero(lambda) then
+  if m <> false and not(IsZero(lambda)) then
       for k in [1..Length(m)] do
           m[k][j] := m[k][j] + m[k][i] * lambda;
       od;
@@ -706,7 +704,7 @@ RECOG.ExpressInStd_SL2 := function(m,std)
       mi := InverseMutable(m);
   fi;
   std.left := std.One;
-  if not IsOne(mi[1,1]) then
+  if not(IsOne(mi[1,1])) then
       if IsZero(mi[2,1]) then
           RECOG.DoRowOp_SL(mi,2,1,std.one,std);
           # Now mi[2,1] is non-zero
@@ -714,11 +712,11 @@ RECOG.ExpressInStd_SL2 := function(m,std)
       RECOG.DoRowOp_SL(mi,1,2,(std.one-mi[1,1])/mi[2,1],std);
   fi;
   # Now mi[1,1] is equal to one
-  if not IsZero(mi[2,1]) then
+  if not(IsZero(mi[2,1])) then
       RECOG.DoRowOp_SL(mi,2,1,-mi[2,1],std);
   fi;
   # Now mi[2,1] is equal to zero and thus mi[2,2] equal to one
-  if not IsZero(mi[1,2]) then
+  if not(IsZero(mi[1,2])) then
       RECOG.DoRowOp_SL(mi,1,2,-mi[1,2],std);
   fi;
   # Now mi is the identity matrix, the element collected in std
@@ -740,7 +738,7 @@ RECOG.ExpressInStd_SL := function(m,std)
   std.left := std.One;
   d := Length(m);
   for i in [1..d] do
-      if not IsOne(mi[i,i]) then
+      if not(IsOne(mi[i,i])) then
           pos := First([i+1..d],k->not IsZero(mi[k,i]));
           if pos = fail then
               pos := i+1;
@@ -750,7 +748,7 @@ RECOG.ExpressInStd_SL := function(m,std)
       fi;
       # Now mi[i,i] is equal to one
       for j in Concatenation([1..i-1],[i+1..d]) do
-          if not IsZero(mi[j,i]) then
+          if not(IsZero(mi[j,i])) then
               RECOG.DoRowOp_SL(mi,j,i,-mi[j,i],std);
           fi;
       od;
@@ -762,43 +760,32 @@ RECOG.ExpressInStd_SL := function(m,std)
   return SLPOfElm(std.left);
 end;
 
+InstallOtherMethod( \*, "for two funny product objects",
+  [ IsFunnyProductObject, IsFunnyProductObject ],
+  function(a,b)
+    return Objectify(FunnyProductObjsType,[a![1]+a![2]*b![1],a![2]*b![2]]);
+  end );
 
+InstallOtherMethod( InverseSameMutability, "for a funny product object",
+  [ IsFunnyProductObject ],
+  function(a)
+    local i;
+    i := a![2]^-1;
+    return Objectify(FunnyProductObjsType,[-i*a![1],i]);
+  end );
 
-# BindGlobal("FunnyProductObjsFamily",NewFamily("FunnyProductObjsFamily"));
-# DeclareCategory("IsFunnyProductObject",
-#    IsPositionalObjectRep and IsMultiplicativeElement and
-#    IsMultiplicativeElementWithInverse );
-# BindGlobal("FunnyProductObjsType",
-#    NewType(FunnyProductObjsFamily,IsFunnyProductObject));
-# DeclareOperation("FunnyProductObj",[IsObject,IsObject]);
-# 
-# 
-# InstallOtherMethod( \*, "for two funny product objects",
-#   [ IsFunnyProductObject, IsFunnyProductObject ],
-#   function(a,b)
-#     return Objectify(FunnyProductObjsType,[a![1]+a![2]*b![1],a![2]*b![2]]);
-#   end );
-# 
-# InstallOtherMethod( InverseSameMutability, "for a funny product object",
-#   [ IsFunnyProductObject ],
-#   function(a)
-#     local i;
-#     i := a![2]^-1;
-#     return Objectify(FunnyProductObjsType,[-i*a![1],i]);
-#   end );
-# 
-# InstallOtherMethod( OneMutable, "for a funny product object",
-#   [ IsFunnyProductObject ],
-#   function(a)
-#     return Objectify(FunnyProductObjsType,[Zero(a![1]),OneMutable(a![2])]);
-#   end );
-# 
-# InstallMethod( FunnyProductObj, "for two arbitrary objects",
-#   [ IsObject, IsObject ],
-#   function(a,b)
-#     return Objectify(FunnyProductObjsType,[a,b]);
-#   end );
-# 
+InstallOtherMethod( OneMutable, "for a funny product object",
+  [ IsFunnyProductObject ],
+  function(a)
+    return Objectify(FunnyProductObjsType,[Zero(a![1]),OneMutable(a![2])]);
+  end );
+
+InstallMethod( FunnyProductObj, "for two arbitrary objects",
+  [ IsObject, IsObject ],
+  function(a,b)
+    return Objectify(FunnyProductObjsType,[a,b]);
+  end );
+
 # FIXME: unused? but see misc/work/DOWORK.
 # Perhaps this was / is meant as a replacement for RECOG.FindStdGens_SL
 # in even characteristic.
@@ -820,7 +807,7 @@ end;
 #   q := Size(f);
 #   ext := DegreeOverPrimeField(f);
 #   d := DimensionOfMatrixGroup(sld);
-#   if not IsObjWithMemory(GeneratorsOfGroup(sld)[1]) then
+#   if not(IsObjWithMemory(GeneratorsOfGroup(sld)[1])) then
 #       sld := GroupWithMemory(sld);
 #   fi;
 # 
@@ -909,7 +896,7 @@ end;
 # 
 #           # w is supposed to become the next basis vector number n+1.
 #           # So we need to throw away one of bas{[n+1..d]}:
-#           i := First([n+1..d],i->not IsZero(ScalarProduct(w,basit[i])));
+#           i := First([n+1..d],i->not(IsZero(ScalarProduct(w,basit[i]))));
 #           Remove(bas,i);
 #           Add(bas,w,n+1);
 #           # However, we want that the rest of them bas{[n+2..d]} is invariant
@@ -918,7 +905,7 @@ end;
 #           pos := PositionNonZero(diffw);
 #           for i in [n+2..d] do
 #               diffv := bas[i]*y-bas[i];
-#               if not IsZero(diffv) then
+#               if not(IsZero(diffv)) then
 #                   bas[i] := bas[i] - (diffv[pos]/diffw[pos]) * w;
 #               fi;
 #           od;
@@ -969,9 +956,9 @@ end;
 #           yf := std.left * yf * std.right;
 #           z := yy+One(yy);
 #           zf := yf;
-#           if not IsZero(z[n,n]) or not IsOne(z[n,n+1]) or
-#              not IsZero(z[n+1,n+1]) or not IsOne(z[n+1,n]) then
-#               ErrorNoReturn("How on earth could this happen???");
+#           if not(IsZero(z[n,n])) or not(IsOne(z[n,n+1])) or
+#              not(IsZero(z[n+1,n+1])) or not(IsOne(z[n+1,n])) then
+#               Error("How on earth could this happen???");
 #           fi;
 #       else  # q > 2
 #           while true do   # will be left by break when we had success!
@@ -1076,13 +1063,13 @@ end;
 #       std.right := std.One;
 #       # Now we clean out the last row of z:
 #       for i in [1..n-1] do
-#           if not IsZero(z[n+1,i]) then
+#           if not(IsZero(z[n+1,i])) then
 #               RECOG.DoColOp_SL(z,n,i,-z[n+1,i],std);
 #           fi;
 #       od;
 #       # Now we clean out the second last row of z:
 #       for i in [1..n-1] do
-#           if not IsZero(z[n,i]) then
+#           if not(IsZero(z[n,i])) then
 #               RECOG.DoRowOp_SL(z,n,i,-z[n,i],std);
 #           fi;
 #       od;
@@ -1101,7 +1088,10 @@ end;
 # end;
 
 # TODO: which algorithm is this? reference?
-RECOG.FindStdGens_SL := function(sld,f)
+RECOG.FindStdGens_SL := function(sld,IsoDim)
+
+  # Group generated by input must be isomorphic SL(IsoDim,q)
+
   # gens of sld must be gens for SL(d,q) in its natural rep with memory
   # This function calls RECOG.SLn_constructsl2 and then extends
   # the basis to a basis of the full row space and calls
@@ -1109,14 +1099,15 @@ RECOG.FindStdGens_SL := function(sld,f)
   # that the SL(d,q) standard generators with respect to this basis are
   # expressed by the slp in terms of the original generators of sld.
   local V,b,bas,basi,basit,d,data,ext,fakegens,id,nu,nu2,p,q,resl2,sl2,sl2gens,
-        sl2gensf,sl2genss,sl2stdf,slp,slpsl2std,slptosl2,st,std,stdgens,i,ex;
+        sl2gensf,sl2genss,sl2stdf,slp,slpsl2std,slptosl2,st,std,stdgens,i,ex,f;
 
   # Some setup:
+  f := FieldOfMatrixGroup(sld);
   p := Characteristic(f);
   q := Size(f);
   ext := DegreeOverPrimeField(f);
   d := DimensionOfMatrixGroup(sld);
-  if not IsObjWithMemory(GeneratorsOfGroup(sld)[1]) then
+  if not(IsObjWithMemory(GeneratorsOfGroup(sld)[1])) then
       sld := GroupWithMemory(sld);
   fi;
 
@@ -1176,11 +1167,11 @@ RECOG.FindStdGens_SL := function(sld,f)
   fakegens := GeneratorsWithMemory(fakegens);
   sl2gensf := ResultOfStraightLineProgram(slptosl2,fakegens);
   sl2stdf := ResultOfStraightLineProgram(slpsl2std,sl2gensf);
-  std := rec( f := f, d := d, n := 2, bas := bas, basi := basi,
+  std := rec( f := f, d := d, GoalDim := IsoDim, n := 2, bas := bas, basi := basi,
               sld := sld, sldf := fakegens, slnstdf := sl2stdf,
               p := p, ext := ext );
   Info(InfoRecog,2,"Going up to SL_d again...");
-  while std.n < std.d do
+  while std.n < std.GoalDim do
       RECOG.SLn_UpStep(std);
   od;
   return rec( slpstd := SLPOfElms(std.slnstdf),
@@ -1194,9 +1185,7 @@ RECOG.RecogniseSL2NaturalOddCharUsingBSGS := function(g,f)
   q := Size(f);
   std := RECOG.MakeSL_StdGens(p,ext,2,2);
   slp := RECOG.FindStdGensUsingBSGS(g,std.all,false,true);
-  if slp = fail then
-      return fail;
-  fi;
+  if slp = fail then return fail; fi;
   res := rec( g := g, one := One(f), One := One(g), f := f, q := q,
               p := p, ext := ext, d := 2, bas := IdentityMat(2,f),
               basi := IdentityMat(2,f) );
@@ -1229,7 +1218,8 @@ RECOG.RecogniseSL2NaturalEvenChar := function(g,f,torig)
   fi;
   if torig = false then
     # if no involution t has been given, compute one, using Proposition 4 from
-    # [KK15].
+    # "Black box groups isomorphic to PGL(2,2^e)" by Kantor & Kassabov,
+    # Journal of Algebra, 421 (2015) 16–26.
     repeat
         am:=PseudoRandom(g);
     until not IsOneProjective(am);
@@ -1257,7 +1247,7 @@ RECOG.RecogniseSL2NaturalEvenChar := function(g,f,torig)
 
   ch := Factors(CharacteristicPolynomial(f,f,t,1));
   if Length(ch) <> 2 or ch[1] <> ch[2] then
-      ErrorNoReturn("matrix is not triagonalizable - this should never happen!");
+      Error("matrix is not triagonalizable - this should never happen!");
   fi;
 
   one := OneMutable(t);
@@ -1294,12 +1284,12 @@ RECOG.RecogniseSL2NaturalEvenChar := function(g,f,torig)
               xm := o[j];
               j := j + 1;
               c := Comm(tm,xm);
-          until not IsOne(c^2);
+          until not(IsOne(c^2));
           xm := xm * c^(((q-1)*(q+1)-1)/2);
           x := StripMemory(xm);
           xb := bas*x*bas^-1;
           co := Coefficients(can,xb[2,1]);
-      until not IsContainedInSpan(mb,co);
+      until not(IsContainedInSpan(mb,co));
       CloseMutableBasis(mb,co);
       Add(tt,x);
       Add(ttm,xm);
@@ -1333,20 +1323,20 @@ RECOG.RecogniseSL2NaturalEvenChar := function(g,f,torig)
               xm := o[j];
               j := j + 1;
               x := MutableCopyMat(bas*StripMemory(xm)*bas^-1);
-          until not IsZero(x[1,2]);
+          until not(IsZero(x[1,2]));
 
-          if not IsOne(x[2,2]) then
+          if not(IsOne(x[2,2])) then
               el := (One(f)-x[2,2])/x[1,2];
               co := Coefficients(can,el) * mati;
               for i in [1..Length(co)] do
-                  if not IsZero(co[i]) then
+                  if not(IsZero(co[i])) then
                       xm := ttm[i] * xm;
                   fi;
               od;
               x[2] := x[2] + x[1] * el;
               if x <> bas*StripMemory(xm)*bas^-1 then
                 # FIXME: sometimes triggered by RecognizeGroup(GL(2,16));
-                ErrorNoReturn("!!!");
+                Error("!!!");
               fi;
           fi;
           # now x[2,2] is equal to One(f)
@@ -1358,7 +1348,7 @@ RECOG.RecogniseSL2NaturalEvenChar := function(g,f,torig)
           el := x[2,1];
           co2 := Coefficients(can,el) * mati;
           for i in [1..Length(co2)] do
-              if not IsZero(co2[i]) then
+              if not(IsZero(co2[i])) then
                   xm := xm * ttm[i];
               fi;
           od;
@@ -1424,7 +1414,7 @@ end;
 #       j := p[2]-1;
 #       while j >= 0 do
 #           z := y^(s/p[1]^(p[2]-j));
-#           if not IsOne(z) then break; fi;
+#           if not(IsOne(z)) then break; fi;
 #           j := j - 1;
 #       od;
 #       o := o * p[1]^(j+1);
@@ -1441,9 +1431,7 @@ RECOG.GuessProjSL2ElmOrder := function(x,f)
   fi;
   if p > 2 then
       y := x^p;
-      if IsOneProjective(y) then
-          return p;
-      fi;
+      if IsOneProjective(y) then return p; fi;
   fi;
   if IsOneProjective(x^(q-1)) then
       facts := Collected(FactInt(q-1:cheap)[1]);
@@ -1461,7 +1449,7 @@ RECOG.GuessProjSL2ElmOrder := function(x,f)
       j := p[2]-1;
       while j >= 0 do
           z := y^(s/p[1]^(p[2]-j));
-          if not IsOneProjective(z) then break; fi;
+          if not(IsOneProjective(z)) then break; fi;
           j := j - 1;
       od;
       o := o * p[1]^(j+1);
@@ -1480,34 +1468,24 @@ RECOG.IsThisSL2Natural := function(gens,f)
   CheckElm := function(x)
       local o;
       o := RECOG.GuessProjSL2ElmOrder(x,f);
-      if o in [1,2] then
-          return false;
-      fi;
+      if o in [1,2] then return false; fi;
       if o > 5 then
           if notA5 = false then Info(InfoRecog,4,"SL2: Group is not A5"); fi;
           notA5 := true;
-          if seenqp1 and seenqm1 then
-              return true;
-          fi;
+          if seenqp1 and seenqm1 then return true; fi;
       fi;
-      if o = p or o <= 5 then
-          return false;
-      fi;
+      if o = p or o <= 5 then return false; fi;
       if (q+1) mod o = 0 then
-          if not seenqp1 then
+          if not(seenqp1) then
               Info(InfoRecog,4,"SL2: Found element of order dividing q+1.");
               seenqp1 := true;
-              if seenqm1 and notA5 then
-                  return true;
-              fi;
+              if seenqm1 and notA5 then return true; fi;
           fi;
       else
-          if not seenqm1 then
+          if not(seenqm1) then
               Info(InfoRecog,4,"SL2: Found element of order dividing q-1.");
               seenqm1 := true;
-              if seenqp1 and notA5 then
-                  return true;
-              fi;
+              if seenqp1 and notA5 then return true; fi;
           fi;
       fi;
       return false;
@@ -1536,9 +1514,7 @@ RECOG.IsThisSL2Natural := function(gens,f)
   notA5 := false;
 
   for i in [1..Length(gens)] do
-      if CheckElm(gens[i]) then
-          return true;
-      fi;
+      if CheckElm(gens[i]) then return true; fi;
   od;
   CheckElm(gens[1]*gens[2]);
   if Length(gens) >= 3 then
@@ -1554,9 +1530,7 @@ RECOG.IsThisSL2Natural := function(gens,f)
       for i in [1..l-1] do
           for j in [i+1..l] do
               x := Comm(gens[i],gens[j]);
-              if CheckElm(x) then
-                  return true;
-              fi;
+              if CheckElm(x) then return true; fi;
               Add(coms,x);
           od;
       od;
@@ -1566,24 +1540,21 @@ RECOG.IsThisSL2Natural := function(gens,f)
           a := RECOG.RandomSubproduct(gens,rec());
           b := RECOG.RandomSubproduct(gens,rec());
           x := Comm(a,b);
-          if CheckElm(x) then
-              return true;
-          fi;
+          if CheckElm(x) then return true; fi;
           Add(coms,x);
       od;
   fi;
-  if ForAll(coms, RECOG.IsScalarMat) then
+  if ForAll(coms,c->RECOG.IsScalarMat(c) <> false) then
       Info(InfoRecog,4,"SL2: Group is soluble, commutators are central");
       return false;
   fi;
   Info(InfoRecog,4,"SL2: Computing normal closure...");
   clos := FastNormalClosure(gens,coms,5);
   for i in [Length(coms)+1..Length(clos)] do
-      if CheckElm(clos[i]) then
-          return true;
-      fi;
+      if CheckElm(clos[i]) then return true; fi;
   od;
-  if ForAll(clos{[Length(coms)+1..Length(clos)]}, RECOG.IsScalarMat) then
+  if ForAll(clos{[Length(coms)+1..Length(clos)]},
+            c->RECOG.IsScalarMat(c) <> false) then
       Info(InfoRecog,4,"SL2: Group is soluble, derived subgroup central");
       return false;
   fi;
@@ -1609,12 +1580,10 @@ end;
 
 #Version 1.2
 
-# finds first element of a list that is relative prime to all others
-# input: list=[SL(d,q), d, q, SL(n,q)] acting as a subgroup of some big SL(n,q)
-# output: list=[rr, dd] for a ppd(2*dd;q)-element rr
+
 RECOG.SLn_godown:=function(list)
   local d, first, q, g, gg, i, r, pol, factors, degrees, newdim, power, rr, ss,
-  newgroup, colldegrees, exp, count;
+  newgroup, colldegrees, exp, count, check, ocount;
 
   first:=function(list)
   local i;
@@ -1633,45 +1602,469 @@ RECOG.SLn_godown:=function(list)
   q:=list[3];
   gg:=list[4];
 
-  Info(InfoRecog,2,"Dimension: ",d);
-  #find an element with irreducible action of relative prime dimension to
-  #all other invariant subspaces
-  #count is just safety, if things go very bad
-  count:=0;
+  # Overall count. Replace by formula and unequality
+  ocount := 0;
+  while ocount < 100 do
 
-  repeat
-     count:=count+1;
-  if InfoLevel(InfoRecog) >= 3 then Print(".\c"); fi;
-     r:=PseudoRandom(g);
-     pol:=CharacteristicPolynomial(r);
-     factors:=Factors(pol);
-     degrees:=AsSortedList(List(factors,Degree));
-     newdim:=first(degrees);
-  until (count>10) or (newdim <> fail and newdim<=Maximum(2,d/4));
+      Info(InfoRecog,2,"Dimension: ",d);
+      #find an element with irreducible action of relative prime dimension to
+      #all other invariant subspaces
+      #count is just safety, if things go very bad
+      count:=0;
 
-  if count>10 then
-     return fail;
-  fi;
+      repeat
+         count:=count+1;
+         if InfoLevel(InfoRecog) >= 3 then Print(".\c"); fi;
+         r:=PseudoRandom(g);
+         pol:=CharacteristicPolynomial(r);
+         factors:=Factors(pol);
+         degrees:=AsSortedList(List(factors,Degree));
+         newdim:=first(degrees);
+      # until (count>10) or (newdim <> fail and newdim<=Maximum(2,d/4));
+      until (count>10) or (newdim <> fail and newdim<=Maximum(2,d/4) and (Size(degrees) = 1 or degrees[2]<>newdim));
 
-  # raise r to a power so that acting trivially outside one invariant subspace
-  degrees:=Filtered(degrees, x->x<>newdim);
-  colldegrees:=Collected(degrees);
-  power:=Lcm(List(degrees, x->q^x-1))*q;
-  # power further to cancel q-part of element order
-  if degrees[1]=1 then
-     exp:=colldegrees[1][2]-(DimensionOfMatrixGroup(gg)-d);
-     if exp>0 then
-       power:=power*q^exp;
-     fi;
-  fi;
-  rr:=r^power;
+      if count>10 then
+         return fail;
+      fi;
+
+      # raise r to a power so that acting trivially outside one invariant subspace
+      degrees:=Filtered(degrees, x->x<>newdim);
+      colldegrees:=Collected(degrees);
+      power:=Lcm(List(degrees, x->q^x-1))*q;
+      # power further to cancel q-part of element order
+      if degrees[1]=1 then
+         exp:=colldegrees[1][2]-(DimensionOfMatrixGroup(gg)-d);
+         if exp>0 then
+           power:=power*q^exp;
+         fi;
+      fi;
+      rr:=r^power;
+      
+      # Check whether the stingray element is an ppd stingray element
+      # TODO: Dont use recursion. Instead use a loop in this function.
+      if newdim > 2 then
+          check := RECOG.CheckStingrayElement(rr,newdim,q);
+          if check[1] then
+              return [rr,newdim,check[2],check[3]];
+          fi;
+      else
+          check := RECOG.SmallCheckStingrayElement(rr,newdim,q);
+          if check[1] then
+              return [rr,newdim,check[2]];
+          fi;
+      fi;
+      
+      ocount := ocount + 1;
+  od;
 
   #conjugate rr to hopefully get a smaller dimensional SL
   #ss:=rr^PseudoRandom(gg);
   #newgroup:=Group(rr,ss);
 
-  return [rr,newdim];
+  # return [rr,newdim];
+
 end;
+
+
+
+# Check whether the Stingray element rr acts irreducibel on the
+# <newdim> invariant subspace.
+# Only works for newdim > 2  ?!?!?
+# Are there no ppd stingray elements if newdim = 2?
+RECOG.CheckStingrayElement:=function(rr,newdim,q)
+    local fixbase, V, subspace, e, base, fld, r, module, b, action, n, factors, order, i, j, ppdcheck;
+    
+    fld := GF(q);
+    r := StripMemory(rr);
+    n := Size(r);
+    fixbase := NullspaceMat(r-IdentityMat(n,fld));
+    
+    base := NullspaceMat(TransposedMat(fixbase));
+    
+    if Size(base) <> newdim then
+        Error("This should not happen");
+    fi;
+    
+    b := Basis(VectorSpace(fld,base),base);
+    action := List(base,v->Coefficients(b,r*v));
+    module := GModuleByMats( [action], fld );
+    if MTX.IsIrreducible(module) then
+        factors := DuplicateFreeList(Factors(q^newdim-1));
+        # TODO: Avoid to compute the order of r. Just check that there is
+        # an factor a such that g^(a*factor) = 1.
+        order := Order(r);
+        for i in factors do
+            ppdcheck := true;
+            for j in [1..(newdim-1)] do
+                if ((q^j-1) mod i = 0) then
+                    ppdcheck := false;
+                    break;
+                fi;
+            od;
+            if ppdcheck and (order mod i = 0) then
+                return [true,base,i];
+            fi;
+        od;
+        return [false];
+    else
+        return [false];
+    fi;
+
+end;
+
+
+
+# finds first element of a list that is relative prime to all others
+# input: list=[SL(d,q), d, q, SL(n,q)] acting as a subgroup of some big SL(n,q)
+# output: list=[rr, dd] for a ppd(2*dd;q)-element rr
+RECOG.SLn_godownFirstStingray:=function(list)
+  local d, first, q, g, gg, i, r, pol, factors, degrees, newdim, power, rr, ss,
+  newgroup, colldegrees, exp, count, check, ocount;
+
+  first:=function(list)
+  local i;
+
+  for i in [1..Length(list)] do
+      if list[i]>1 and Gcd(list[i],Product(list)/list[i])=1 then
+         return list[i];
+      fi;
+  od;
+
+  return fail;
+  end;
+
+  g:=list[1];
+  d:=list[2];
+  q:=list[3];
+  gg:=list[4];
+
+  # Overall count. Replace by formula and unequality
+  ocount := 0;
+  while ocount < 100 do
+
+      Info(InfoRecog,2,"Dimension: ",d);
+      #find an element with irreducible action of relative prime dimension to
+      #all other invariant subspaces
+      #count is just safety, if things go very bad
+      count:=0;
+
+      repeat
+         count:=count+1;
+         if InfoLevel(InfoRecog) >= 3 then Print(".\c"); fi;
+         r:=PseudoRandom(g);
+         pol:=CharacteristicPolynomial(r);
+         factors:=Factors(pol);
+         degrees:=AsSortedList(List(factors,Degree));
+         newdim:=first(degrees);
+      until (count>10) or (newdim <> fail and newdim<=Maximum(2,d/4) and (Size(degrees) = 1 or degrees[2]<>newdim));
+
+      if count>10 then
+         return fail;
+      fi;
+
+      # raise r to a power so that acting trivially outside one invariant subspace
+      degrees:=Filtered(degrees, x->x<>newdim);
+      colldegrees:=Collected(degrees);
+      power:=Lcm(List(degrees, x->q^x-1))*q;
+      # power further to cancel q-part of element order
+      if degrees[1]=1 then
+         exp:=colldegrees[1][2]-(DimensionOfMatrixGroup(gg)-d);
+         if exp>0 then
+           power:=power*q^exp;
+         fi;
+      fi;
+      rr:=r^power;
+      
+      # Check whether the stingray element is an ppd stingray element
+      # TODO: Dont use recursion. Instead use a loop in this function.
+      if newdim > 2 then
+          check := RECOG.CheckStingrayElementPPDList(rr,newdim,q);
+          if check[1] then
+              return [rr,newdim,check[2],check[3]];
+          fi;
+      else
+          check := RECOG.SmallCheckStingrayElement(rr,newdim,q);
+          if check[1] then
+              return [rr,newdim,check[2]];
+          fi;
+      fi;
+      
+      ocount := ocount + 1;
+  od;
+
+  #conjugate rr to hopefully get a smaller dimensional SL
+  #ss:=rr^PseudoRandom(gg);
+  #newgroup:=Group(rr,ss);
+
+  # return [rr,newdim];
+
+end;
+
+
+
+# finds first element of a list that is relative prime to all others
+# input: list=[SL(d,q), d, q, SL(n,q)] acting as a subgroup of some big SL(n,q)
+# output: list=[rr, dd] for a ppd(2*dd;q)-element rr
+RECOG.SLn_godownSecondStingray:=function(list,possiblePPDs,newdimsecondstingray)
+  local d, first, q, g, gg, i, r, pol, factors, degrees, newdim, power, rr, ss,
+  newgroup, colldegrees, exp, count, check, ocount;
+
+  first:=function(list)
+  local i;
+
+  for i in [1..Length(list)] do
+      if list[i]>1 and Gcd(list[i],Product(list)/list[i])=1 then
+         return list[i];
+      fi;
+  od;
+
+  return fail;
+  end;
+
+  g:=list[1];
+  d:=list[2];
+  q:=list[3];
+  gg:=list[4];
+
+  # Overall count. Replace by formula and unequality
+  ocount := 0;
+  while ocount < 100 do
+  
+      Info(InfoRecog,2,"Dimension: ",d);
+      #find an element with irreducible action of relative prime dimension to
+      #all other invariant subspaces
+      #count is just safety, if things go very bad
+      count:=0;
+      repeat
+         count:=count+1;
+         if InfoLevel(InfoRecog) >= 3 then Print(".\c"); fi;
+         r:=PseudoRandom(g);
+         pol:=CharacteristicPolynomial(r);
+         factors:=Factors(pol);
+         degrees:=AsSortedList(List(factors,Degree));
+         newdim:=first(degrees);
+      until (count>10) or (newdim <> fail and newdim<=Maximum(2,d/4) and (Size(degrees) = 1 or degrees[2]<>newdim));
+
+      if count>10 then
+         return fail;
+      fi;
+
+      # raise r to a power so that acting trivially outside one invariant subspace
+      degrees:=Filtered(degrees, x->x<>newdim);
+      colldegrees:=Collected(degrees);
+      power:=Lcm(List(degrees, x->q^x-1))*q;
+      # power further to cancel q-part of element order
+      if degrees[1]=1 then
+         exp:=colldegrees[1][2]-(DimensionOfMatrixGroup(gg)-d);
+         if exp>0 then
+           power:=power*q^exp;
+         fi;
+      fi;
+      rr:=r^power;
+      
+      # Check whether the stingray element is an ppd stingray element
+      # TODO: Dont use recursion. Instead use a loop in this function.
+      if newdim > 2 then
+          check := RECOG.CheckStingrayElementPossiblePPDs(rr,newdim,q,possiblePPDs,newdimsecondstingray);
+          if check[1] then
+              return [rr,newdim,check[2],check[3]];
+          fi;
+      else
+          check := RECOG.SmallCheckStingrayElement(rr,newdim,q);
+          if check[1] then
+              return [rr,newdim,check[2]];
+          fi;
+      fi;
+      
+      ocount := ocount + 1;
+  od;
+
+  #conjugate rr to hopefully get a smaller dimensional SL
+  #ss:=rr^PseudoRandom(gg);
+  #newgroup:=Group(rr,ss);
+
+  # return [rr,newdim];
+
+end;
+
+
+
+
+# Check whether the Stingray element rr acts irreducibel on the
+# <newdim> invariant subspace.
+# Only works for newdim > 2  ?!?!?
+# Are there no ppd stingray elements if newdim = 2?
+RECOG.CheckStingrayElementPPDList:=function(rr,newdim,q)
+    local fixbase, V, subspace, e, base, fld, r, module, b, action, n, factors, order, i, j, ppdcheck, ppdlist, d;
+    
+    fld := GF(q);
+    r := StripMemory(rr);
+    n := Size(r);
+    fixbase := NullspaceMat(r-IdentityMat(n,fld));
+    
+    base := NullspaceMat(TransposedMat(fixbase));
+    
+    if Size(base) <> newdim then
+        # Error("This should not happen.")
+        Display("This should not happen.");
+        return [false];
+    fi;
+    
+    b := Basis(VectorSpace(fld,base),base);
+    action := List(base,v->Coefficients(b,r*v));
+    module := GModuleByMats( [action], fld );
+    
+    if MTX.IsIrreducible(module) then
+        # TODO: Avoid to compute the order of r. Just check that there is
+        # an factor a such that g^(a*factor) = 1.
+        order := Order(r);
+        factors := DuplicateFreeList(Factors(order));
+        ppdlist := [];
+        for i in factors do
+            for e in [1..n] do
+                if (q^e mod i = 0) then
+                    ppdcheck := true;
+                    for j in [1..(e-1)] do
+                        if ((q^j-1) mod i = 0) then
+                            ppdcheck := false;
+                            break;
+                        fi;
+                    od;
+                    if ppdcheck then
+                        # return [true,base,i];
+                        # break;
+                        Add(ppdlist, [i,e]);
+                    fi;
+                fi;
+            od;
+        od;
+        
+        if IsEmpty(ppdlist) then
+            return [false];
+        else
+            # d := Size(r);
+            # Apply(ppdlist,x->d-x);
+            # Apply(ppdlist,x->newdim-x);
+            # ppdlist := Filtered(ppdlist,x->IsPrime(x));
+            # if ppdlist = [] then
+            #     return [false];
+            # else
+            #     return[true,base,ppdlist];
+            # fi;
+            return[true,base,ppdlist];
+        fi;
+    else
+        return [false];
+    fi;
+
+end;
+
+
+
+# Check whether the Stingray element rr acts irreducibel on the
+# <newdim> invariant subspace.
+# Only works for newdim > 2  ?!?!?
+# Are there no ppd stingray elements if newdim = 2?
+RECOG.CheckStingrayElementPossiblePPDs:=function(rr,newdim,q,possiblePPDs,newdimsecondstingray)
+    local fixbase, V, subspace, e, base, fld, r, module, b, action, n, factors, order, i, j, ppdcheck, ppdlist, d, cn, e2;
+    
+    fld := GF(q);
+    r := StripMemory(rr);
+    n := Size(r);
+    # cn := newdim + newdimsecondstingray;
+    # Apply(possiblePPDs,x->cn-x);
+    # possiblePPDs := Filtered(possiblePPDs,x-> x>0);
+    # possiblePPDs := Filtered(possiblePPDs,x->IsPrime(x));
+    # if possiblePPDs = [] then
+    #     return [false];
+    # fi;
+    fixbase := NullspaceMat(r-IdentityMat(n,fld));
+    
+    base := NullspaceMat(TransposedMat(fixbase));
+    
+    if Size(base) <> newdim then
+        # Error("This should not happen.");
+        Display("This should not happen.");
+        return [false];
+    fi;
+    
+    b := Basis(VectorSpace(fld,base),base);
+    action := List(base,v->Coefficients(b,r*v));
+    module := GModuleByMats( [action], fld );
+    if MTX.IsIrreducible(module) then
+        # factors := DuplicateFreeList(Factors(q^newdim-1));
+        # TODO: Avoid to compute the order of r. Just check that there is
+        # an factor a such that g^(a*factor) = 1.
+        order := Order(r);
+        factors := DuplicateFreeList(Factors(order));
+        
+        # Maybe use cn here instead of n?
+        Apply(possiblePPDs,x->[x[1],n-x[2]] );
+        # cn := newdim + newdimsecondstingray;
+        # Apply(possiblePPDs,x->[x[1],cn-x[2]] );
+        # possiblePPDs := Filtered(possiblePPDs,x-> x[2]>0);
+        for i in factors do
+            for e in possiblePPDs do
+                e2 := e[2];
+                if (q^e2-1 mod i = 0) then
+                    ppdcheck := true;
+                    for j in [1..(e2-1)] do
+                        if ((q^j-1) mod i = 0) then
+                            ppdcheck := false;
+                            break;
+                        fi;
+                    od;
+                    if ppdcheck then
+                        return [true,base,[i,e2]];
+                        break;
+                    fi;
+                fi;
+            od;
+        od;
+        
+        return [false];
+        
+    else
+        return [false];
+    fi;
+
+end;
+
+
+
+
+# Check whether the Stingray element rr acts irreducibel on the
+# <newdim> invariant subspace.
+# Only works for newdim > 2  ?!?!?
+# Are there no ppd stingray elements if newdim = 2?
+RECOG.SmallCheckStingrayElement:=function(rr,newdim,q)
+    local fixbase, V, subspace, e, base, fld, r, module, b, action, n, factors, order, i, j, ppdcheck;
+    
+    fld := GF(q);
+    r := StripMemory(rr);
+    n := Size(r);
+    fixbase := NullspaceMat(r-IdentityMat(n,fld));
+    
+    base := NullspaceMat(TransposedMat(fixbase));
+    
+    if Size(base) <> newdim then
+        # Error("This should not happen.");
+        Display("This should not happen.");
+        return [false];
+    fi;
+    
+    b := Basis(VectorSpace(fld,base),base);
+    action := List(base,v->Coefficients(b,r*v));
+    module := GModuleByMats( [action], fld );
+    if MTX.IsIrreducible(module) then
+        return [true,base];
+    else
+        return [false];
+    fi;
+
+end;
+
+
 
 # input is (group,dimension,q)
 # output is a group element acting irreducibly in two dimensions, and fixing
@@ -1696,6 +2089,113 @@ RECOG.SLn_constructppd2:=function(g,dim,q)
   return out[1];
 
 end;
+
+
+# input is (group,dimension,q)
+# output is a group element acting irreducibly in two dimensions, and fixing
+# a (dimension-2)-dimensional subspace
+# uses two stingray elements as in the paper by cheryl praeger and alice niemeyer
+RECOG.SLn_constructppd2TwoStingray:=function(g,dim,q)
+  local out, list, out2;
+
+  list:=[g,dim,q,g];
+  repeat
+     out:=RECOG.SLn_godown(list);
+     if out=fail or out[1]*out[1]=One(out[1]) then
+        if InfoLevel(InfoRecog) >= 3 then Print("B\c"); fi;
+        list:=[g,dim,q,g];
+        out:=fail;
+     else
+        if out[2]>2 then
+           repeat
+                out2:=RECOG.SLn_godown(list);
+                if out2=fail or out2[1]*out2[1]=One(out2[1]) then
+                    if InfoLevel(InfoRecog) >= 3 then Print("B\c"); fi;
+                    list:=[g,dim,q,g];
+                    out2:=fail;
+                fi;
+           until out2<>fail and out2[2] > 2;
+           if RECOG.CheckNewStingrayGroup(out[1],out[2],out[3],out2[1],out2[2],out2[3],q) then
+                list:=[Group(out[1],out2[1]),out[2]+out2[2],q,g];
+           else
+                if InfoLevel(InfoRecog) >= 3 then Print("B\c"); fi;
+                list:=[g,dim,q,g];
+                out:=fail;
+           fi;
+        fi;
+     fi;
+  until out<>fail and out[2]=2;
+
+  return out[1];
+
+end;
+
+
+
+
+# input is (group,dimension,q)
+# output is a group element acting irreducibly in two dimensions, and fixing
+# a (dimension-2)-dimensional subspace
+# uses two stingray elements as in the paper by cheryl praeger and alice niemeyer
+# Also checks that ppd(g,e1), ppd(g,e2) fulfills e1 + e2 = d
+RECOG.SLn_constructppd2TwoStingrayVersion2:=function(g,dim,q)
+  local out, list, out2;
+
+  list:=[g,dim,q,g];
+  repeat
+     out:=RECOG.SLn_godownFirstStingray(list);
+     if out=fail or out[1]*out[1]=One(out[1]) then
+        if InfoLevel(InfoRecog) >= 3 then Print("B\c"); fi;
+        list:=[g,dim,q,g];
+        out:=fail;
+     else
+        if out[2]>2 then
+           repeat
+                out2:=RECOG.SLn_godownSecondStingray(list,out[4],out[2]);
+                if out2=fail or out2[1]*out2[1]=One(out2[1]) then
+                    if InfoLevel(InfoRecog) >= 3 then Print("B\c"); fi;
+                    list:=[g,dim,q,g];
+                    out2:=fail;
+                fi;
+           until out2<>fail and out2[2] > 2;
+           if RECOG.CheckNewStingrayGroup(out[1],out[2],out[3],out2[1],out2[2],out2[3],q) then
+                list:=[Group(out[1],out2[1]),out[2]+out2[2],q,g];
+           else
+                if InfoLevel(InfoRecog) >= 3 then Print("B\c"); fi;
+                list:=[g,dim,q,g];
+                out:=fail;
+           fi;
+        fi;
+     fi;
+  until out<>fail and out[2]=2;
+
+  return out[1];
+
+end;
+
+
+RECOG.CheckNewStingrayGroup := function(g1,dim1,base1,g2,dim2,base2,q)
+    local baseSum, b, action1, action2, fld, module;
+
+    baseSum := ShallowCopy(base1);
+    Append(baseSum,base2);
+    
+    if NullspaceMat(baseSum) <> [] then
+        return false;
+    fi;
+    
+    fld := GF(q);
+    b := Basis(VectorSpace(fld,baseSum),baseSum);
+    action1 := List(baseSum,v->Coefficients(b,g1*v));
+    action2 := List(baseSum,v->Coefficients(b,g2*v));
+    module := GModuleByMats( [action1,action2], fld );
+    if MTX.IsIrreducible(module) then
+        return true;
+    else
+        return false;
+    fi;
+end;
+
 
 RECOG.SLn_constructsl4:=function(g,dim,q,r)
   local s,h,count,readydim4,readydim3,ready,u,orderu,
@@ -1862,7 +2362,9 @@ end;
 RECOG.SLn_constructsl2:=function(g,d,q)
   local r,h;
 
-  r:=RECOG.SLn_constructppd2(g,d,q);
+  #r:=RECOG.SLn_constructppd2(g,d,q);
+  #r:=RECOG.SLn_constructppd2TwoStingray(g,d,q);
+  r:=RECOG.SLn_constructppd2TwoStingrayVersion2(g,d,q);
   h:=RECOG.SLn_constructsl4(g,d,q,r);
   if not (q in [2,3,4,5,9]) then
      return RECOG.SLn_godownfromd(h,q,4,d);
@@ -1921,18 +2423,18 @@ RECOG.SLn_UpStep := function(w)
   local DoColOp_n,DoRowOp_n,FixSLn,Fixc,MB,Vn,Vnc,aimdim,c,c1,c1f,cf,cfi,
         ci,cii,coeffs,flag,i,id,int1,int3,j,k,lambda,list,mat,newbas,newbasf,
         newbasfi,newbasi,newdim,newpart,perm,pivots,pivots2,pos,pow,s,sf,
-        slp,std,sum1,tf,trans,transd,transr,v,vals,zerovec;
+        slp,std,sum1,tf,trans,transd,transr,v,vals,zerovec,counter;
 
   Info(InfoRecog,3,"Going up: ",w.n," (",w.d,")...");
 
   # Before we begin, we upgrade the data structure with a few internal
   # things:
 
-  if not IsBound(w.can) then w.can := CanonicalBasis(w.f); fi;
-  if not IsBound(w.canb) then w.canb := BasisVectors(w.can); fi;
-  if not IsBound(w.One) then w.One := One(w.slnstdf[1]); fi;
-  if not IsBound(w.transh) then w.transh := []; fi;
-  if not IsBound(w.transv) then w.transv := []; fi;
+  if not(IsBound(w.can)) then w.can := CanonicalBasis(w.f); fi;
+  if not(IsBound(w.canb)) then w.canb := BasisVectors(w.can); fi;
+  if not(IsBound(w.One)) then w.One := One(w.slnstdf[1]); fi;
+  if not(IsBound(w.transh)) then w.transh := []; fi;
+  if not(IsBound(w.transv)) then w.transv := []; fi;
   # Update our cache of *,n and n,* transvections because we need them
   # all over the place:
   std := RECOG.InitSLstd(w.f,w.n,
@@ -1943,12 +2445,12 @@ RECOG.SLn_UpStep := function(w)
   for i in [1..w.n-1] do
       for k in [1..w.ext] do
           pos := (i-1)*w.ext + k;
-          if not IsBound(w.transh[pos]) then
+          if not(IsBound(w.transh[pos])) then
               RECOG.ResetSLstd(std);
               RECOG.DoColOp_SL(false,w.n,i,w.canb[k],std);
               w.transh[pos] := std.right;
           fi;
-          if not IsBound(w.transv[pos]) then
+          if not(IsBound(w.transv[pos])) then
               RECOG.ResetSLstd(std);
               RECOG.DoRowOp_SL(false,i,w.n,w.canb[k],std);
               w.transv[pos] := std.left;
@@ -1965,7 +2467,7 @@ RECOG.SLn_UpStep := function(w)
     coeffs := IntVecFFE(Coefficients(w.can,lambda));
     if i = w.n then
         for k in [1..w.ext] do
-            if not IsZero(coeffs[k]) then
+            if not(IsZero(coeffs[k])) then
                 if IsOne(coeffs[k]) then
                     el := el * w.transh[(j-1)*w.ext+k];
                 else
@@ -1975,7 +2477,7 @@ RECOG.SLn_UpStep := function(w)
         od;
     elif j = w.n then
         for k in [1..w.ext] do
-            if not IsZero(coeffs[k]) then
+            if not(IsZero(coeffs[k])) then
                 if IsOne(coeffs[k]) then
                     el := el * w.transv[(i-1)*w.ext+k];
                 else
@@ -1984,7 +2486,7 @@ RECOG.SLn_UpStep := function(w)
             fi;
         od;
     else
-        ErrorNoReturn("either i or j must be equal to n");
+        Error("either i or j must be equal to n");
     fi;
     return el;
   end;
@@ -1995,7 +2497,7 @@ RECOG.SLn_UpStep := function(w)
     coeffs := IntVecFFE(Coefficients(w.can,lambda));
     if j = w.n then
         for k in [1..w.ext] do
-            if not IsZero(coeffs[k]) then
+            if not(IsZero(coeffs[k])) then
                 if IsOne(coeffs[k]) then
                     el := w.transv[(i-1)*w.ext+k] * el;
                 else
@@ -2005,7 +2507,7 @@ RECOG.SLn_UpStep := function(w)
         od;
     elif i = w.n then
         for k in [1..w.ext] do
-            if not IsZero(coeffs[k]) then
+            if not(IsZero(coeffs[k])) then
                 if IsOne(coeffs[k]) then
                     el := w.transh[(j-1)*w.ext+k] * el;
                 else
@@ -2014,7 +2516,7 @@ RECOG.SLn_UpStep := function(w)
             fi;
         od;
     else
-        ErrorNoReturn("either i or j must be equal to n");
+        Error("either i or j must be equal to n");
     fi;
     return el;
   end;
@@ -2026,6 +2528,8 @@ RECOG.SLn_UpStep := function(w)
   id := IdentityMat(w.d,w.f);
   FixSLn := VectorSpace(w.f,id{[w.n+1..w.d]});
   Vn := VectorSpace(w.f,id{[1..w.n]});
+  
+  Display("Preparation done.");
 
   # First pick an element in SL_n with fixed space of dimension d-n+1:
   # We already have an SLP for an n-1-cycle: it is one of the std gens.
@@ -2043,7 +2547,7 @@ RECOG.SLn_UpStep := function(w)
             sf := w.slnstdf[2*w.ext+1];
           fi;
       else
-          ErrorNoReturn("this program only works for odd n or n=2");
+          Error("this program only works for odd n or n=2");
       fi;
   else
       # In this case the n-1-cycle is the identity, so we take a transvection:
@@ -2051,13 +2555,17 @@ RECOG.SLn_UpStep := function(w)
       s[1,2] := One(w.f);
       sf := w.slnstdf[1];
   fi;
+  
+  Display("Step 1 done.");
 
   # Find a good random element:
   w.count := 0;
-  aimdim := Minimum(2*w.n-1,w.d);
+  aimdim := Minimum(2*w.n-1,w.GoalDim);
   newdim := aimdim - w.n;
+  counter := 0;
   while true do   # will be left by break
       while true do    # will be left by break
+          counter := counter + 1;
           if InfoLevel(InfoRecog) >= 3 then Print(".\c"); fi;
           w.count := w.count + 1;
           c1 := PseudoRandom(w.sld);
@@ -2071,12 +2579,17 @@ RECOG.SLn_UpStep := function(w)
           # Now check that Vn + Vn*s^c1 has dimension 2n-1:
           Vnc := VectorSpace(w.f,c{[1..w.n]});
           sum1 := ClosureLeftModule(Vn,Vnc);
+          Print("-----\n");
+          Print("Dimensions: \n");
+          Display(Dimension(sum1));
+          Display(aimdim);
+          Print("-----\n");
           if Dimension(sum1) = aimdim then
               Fixc := VectorSpace(w.f,NullspaceMat(c-One(c)));
               int1 := Intersection(Fixc,Vn);
               for i in [1..Dimension(int1)] do
                   v := Basis(int1)[i];
-                  if not IsZero(v[w.n]) then break; fi;
+                  if not(IsZero(v[w.n])) then break; fi;
               od;
               if IsZero(v[w.n]) then
                   Info(InfoRecog,2,"Ooops: Component n was zero!");
@@ -2087,7 +2600,10 @@ RECOG.SLn_UpStep := function(w)
               ci := c^-1;
               break;
           fi;
+          Display(counter);
       od;
+      
+      Display("Step 2 done.");
 
       # Now we found our aimdim-dimensional space W. Since SL_n
       # has a d-n-dimensional fixed space W_{d-n} and W contains a complement
@@ -2095,27 +2611,30 @@ RECOG.SLn_UpStep := function(w)
       # newdim.
 
       # Change basis:
-      newpart := ExtractSubMatrix(c,[1..w.n-1],[1..w.d]);
+      newpart := ExtractSubMatrix(c,[1..(w.n-1)],[1..(w.d)]);
       # Clean out the first n entries to go to the fixed space of SL_n:
       zerovec := Zero(newpart[1]);
-      for i in [1..w.n-1] do
+      for i in [1..(w.n-1)] do
+          Display(i);
           CopySubVector(zerovec,newpart[i],[1..w.n],[1..w.n]);
       od;
       MB := MutableBasis(w.f,[],zerovec);
       i := 1;
       pivots := EmptyPlist(newdim);
       while i <= Length(newpart) and NrBasisVectors(MB) < newdim do
-          if not IsContainedInSpan(MB,newpart[i]) then
+          if not(IsContainedInSpan(MB,newpart[i])) then
               Add(pivots,i);
               CloseMutableBasis(MB,newpart[i]);
           fi;
           i := i + 1;
       od;
+      Display("Still here 1");
       newpart := newpart{pivots};
       newbas := Concatenation(id{[1..w.n-1]},[v],newpart);
       if 2*w.n-1 < w.d then
           int3 := Intersection(FixSLn,Fixc);
-          if Dimension(int3) <> w.d-2*w.n+1 then
+          # IS THE NEXT LINE CORRECT?
+          if Dimension(int3) <> w.d - aimdim then
               Info(InfoRecog,2,"Ooops, FixSLn \cap Fixc wrong dimension");
               continue;
           fi;
@@ -2127,6 +2646,8 @@ RECOG.SLn_UpStep := function(w)
           Info(InfoRecog,2,"Ooops, Fixc intersected too much, we try again");
           continue;
       fi;
+      
+      Display("Still here 2");
       ci := newbas * ci * newbasi;
       cii := ExtractSubMatrix(ci,[w.n+1..aimdim],[1..w.n-1]);
       ConvertToMatrixRep(cii,Size(w.f));
@@ -2138,13 +2659,15 @@ RECOG.SLn_UpStep := function(w)
       MB := MutableBasis(w.f,[],zerovec);
       i := 1;
       pivots2 := EmptyPlist(newdim);
+      Display("Still here 3");
       while i <= Length(cii) and NrBasisVectors(MB) < newdim do
-          if not IsContainedInSpan(MB,cii[i]) then
+          if not(IsContainedInSpan(MB,cii[i])) then
               Add(pivots2,i);
               CloseMutableBasis(MB,cii[i]);
           fi;
           i := i + 1;
       od;
+      Display("Still here 4");
       if Length(pivots2) = newdim then
           cii := cii{pivots2}^-1;
           ConvertToMatrixRep(cii,w.f);
@@ -2164,7 +2687,7 @@ RECOG.SLn_UpStep := function(w)
   # standard generators, namely newbas^-1 * std * newbas.
   newbasf := w.One;
   for i in [1..w.n-1] do
-      if not IsZero(v[i]) then
+      if not(IsZero(v[i])) then
           newbasf := DoColOp_n(newbasf,w.n,i,v[i],w);
       fi;
   od;
@@ -2204,7 +2727,7 @@ RECOG.SLn_UpStep := function(w)
           vals := BlownUpVector(w.can,cii[i]*lambda);
           for j in [1..w.ext * newdim] do
               pow := IntFFE(vals[j]);
-              if not IsZero(pow) then
+              if not(IsZero(pow)) then
                   if IsOne(pow) then
                       tf := tf * trans[j];
                   else
@@ -2233,7 +2756,7 @@ RECOG.SLn_UpStep := function(w)
       for j in [1..newdim] do
           coeffs := IntVecFFE(Coefficients(w.can,-ci[w.n+j,w.n]));
           for k in [1..w.ext] do
-              if not IsZero(coeffs[k]) then
+              if not(IsZero(coeffs[k])) then
                   if IsOne(coeffs[k]) then
                       tf := transd[(j-1)*w.ext + k] * tf;
                   else
@@ -2254,7 +2777,7 @@ RECOG.SLn_UpStep := function(w)
       for j in [1..newdim] do
           coeffs := IntVecFFE(Coefficients(w.can,ci[w.n+j,w.n]));
           for k in [1..w.ext] do
-              if not IsZero(coeffs[k]) then
+              if not(IsZero(coeffs[k])) then
                   if IsOne(coeffs[k]) then
                       tf := tf * transd[(j-1)*w.ext + k];
                   else
@@ -2280,7 +2803,7 @@ RECOG.SLn_UpStep := function(w)
       return w;
   fi;
   # We can finish off:
-  if aimdim = w.d then
+  if aimdim = w.GoalDim then
       # In this case we just finish off and do not bother with
       # the transvections, we will only need the standard gens:
       # Now put together the (newdim+1)-cycle:
@@ -2296,7 +2819,7 @@ RECOG.SLn_UpStep := function(w)
               tf:=transd[(i-1)*w.ext+1]^-1*transr[i]*transd[(i-1)*w.ext+1]^-1;
           fi;
           s := s * tf;
-          flag := not flag;
+          flag := not(flag);
       od;
 
       # Finally put together the new 2n-1-cycle and 2n-2-cycle:
@@ -2326,7 +2849,7 @@ RECOG.SLn_UpStep := function(w)
           tf := transd[(i-1)*w.ext+1]^-1*transr[i]*transd[(i-1)*w.ext+1]^-1;
       fi;
       s := s * tf;
-      flag := not flag;
+      flag := not(flag);
   od;
 
   # Finally put together the new 2n-1-cycle and 2n-2-cycle:
@@ -2349,6 +2872,286 @@ RECOG.SLn_UpStep := function(w)
   w.n := 2*w.n-1;
   return w;
 end;
+
+
+#################################################################################
+################################# Ducs Code #####################################
+#################################################################################
+
+# TODO: Use this for the constructive recognition of SL(2,q)
+
+# Code has been written by Duc Khuat during his Bachelors thesis
+# This partly implements an algorithm based on the paper ”Constructive Recognition of SL(2, q)” by Leedham Green and E. A. O’Brien.
+# For q being a p-power, the algorithm can only be applied to representations where the degree is smaller than p.
+
+
+## computes for an element of SL(2,q) its representation in the n-th symmetric power
+## F is the field
+## n-th symmetric power
+## A element of SL(2,q)
+## return : Matrix of dimension n+1 corresponding to the action of SL(2,q) on T_n represented in the basis ( x^n, ...., y^n)
+RECOG.SymPowRepSL2 :=function(F,n, A)
+    local res,i,t,k,sum;
+    res := IdentityMat(n+1,F);
+    for i in [0..n] do
+        for t in [0..n] do
+            sum :=0;
+            for k in [0..i] do
+                if n-i-(t-k) > -1 and t-k > -1 then
+                    sum:= sum + Binomial(n-i,t-k)*Binomial(i,k)* (A[1][1])^(t-k)*(A[2][1])^k*(A[1][2])^(n -i -(t-k))*(A[2][2])^(i-k);
+                fi;
+            od;
+            res[i+1][n-t+1]:= sum;
+        od;
+    od;
+    return res;
+end;;
+
+
+
+## randomly looks for an element of order q-1.
+##input:
+## G the group where we look randomly for an element of order n.
+## n the order of g.
+## return g an element with order n, and the number of tries.
+RECOG.RandomElementOfOrder:= function(G, n)
+    local nrTries ,g; nrTries := 0;
+    while nrTries < 1000 do
+        g := PseudoRandom(G);
+        if (Order(g) = n) then
+            return [g, nrTries];
+        fi;
+        nrTries := nrTries +1;
+    od;
+    ####### Added by Daniel Rademacher #######
+    return ["fail"];
+    ##########################################
+    ErrorNoReturn ( " No element of order ", n, " has been found.\n");
+end ;;
+
+
+
+## z^r is the eigenvalue of g on natural module.
+## find the unique (up to multiplication of -1) element in Z_q-1, to obtain the expected set of exponents, namely {-n, -n+2, ..., n-2, n }.
+##input:
+## g has order q-1 and q-1 eigenvectors.
+## E is the set of exponent of eigenvalues in respect to a fixed primitve element of the field ## F the underlying field F of order q.
+## r in the unit group of Z_{q-1} such that E*(r^{-1}) = { -s,-s+2, ..., s-2,s}
+## return M matrix with eigenvectors as rows such that the i-th row is the eigenvector to -s + 2(i-1) for i =1 , ..., s+1.
+RECOG.OrderEigenvectors := function(g , E ,F, r)
+    local
+    i, # every row of M.
+    s, # Eigenvector of g
+    M, # Output Matrix
+    EVs, # Eigenvectors of g.
+    z
+    ;
+    z:= PrimitiveElement(F);
+    M := [];
+    EVs := Eigenvectors(F,g);
+    for i in [ 1 .. DimensionsMat(g)[1]] do
+        for s in EVs do
+            if s*g = (z^(E[i]*r))*s then
+                M[i] := s;
+            fi;
+        od;
+    od;
+    return M;
+end;;
+
+
+
+## find k such that List([0..n], x -> (n-2*x) mod (q-1)) * k = E.
+## this k is unique, up to adding (q-1) multiples.
+## input:
+## E is the set of exponent of eigenvalues in respect to a fixed primitve element of the field
+## n the n-th symmetric power.
+## q the order of the underlying field.
+## return k such that E = k * {-s,-s+2,..., s-2, s}.
+## Note: k is unique up to sign for the considered cases.
+RECOG.EVNatRep := function(E,n,q)
+    local k,l ,res, Exp;
+    res := 0;
+    Exp:=List([0..n], x -> (n-2*x) mod (q-1));
+    for k in PrimeResidues(q-1) do
+        l := OrderMod(k,q-1)-1; # inverse of k in Z_q-1.
+        if Set(E*(k^l) mod (q-1)) = Set(Exp) then
+            res := k;
+            break;
+        fi;
+    od;
+    return res;
+end;;
+
+
+
+## Symmetric Power Basis ###
+## representation of SL(2,q) in GL(T_n) for n <p.
+## find an element g having N distinct eigenvalues;
+## if G is symmetric power of SL(2, q) n<p.
+## find a geometric progression ; order eigenspaces to give ## a basis exhibiting diagonalisation of g.
+##input:
+## G n-th symmetric power of SL(2,q) n<p.
+## return : Basis of the form (x^n, x^(n-1)y, ...,y^n) and the corresponding element g.
+
+RECOG.SymmetricPowerBasis:= function (G)
+    local F,z,q,p,n, #casual variables.
+    k,               #z^k is eigenvalue of g on x.
+    M,               # returned basis ( x^n,..., y^n)
+    Ek,              #exponents of eigenvalues of g to fixed z.
+    g,               #order q-1
+    h,               # <g,h> = G. And h conjugated to g.
+    con ,            # random conjugation element
+    i,               # iterating through columns
+    mu_i ,           # coefficients of basis element
+    abZero ,         # if ab = 0 we take the last row, if ab not zero, we takte the first row of h.
+    ab,              # coefficents to
+    mu_bet           # coefficents to
+    ;
+    F := FieldOfMatrixGroup(G);
+    z:= PrimitiveElement(F);
+    n := DimensionsMat(PseudoRandom(G))[1] -1;
+    q := Size(F);
+    p := Characteristic(F);
+    k :=1;
+    if q < 6 or ((p mod 2 = 1) and q = p and p > 6 and n > (p-7)/2 and (not (p = 13 and n =4) )) then
+        ErrorNoReturn (" Exceptional Case , use another method ");
+    fi;
+    if (Size(PseudoRandom(G)) mod 2 = 0) then
+        g := RECOG.RandomElementOfOrder(G,q-1)[1];
+    else
+        g:= RECOG.RandomElementOfOrder(G,(q-1)/2)[1];
+    fi;
+    ####### Added by me #######
+    if g = "fail" then
+        return ["fail"];
+    fi;
+    ###########################
+    Ek:= List(Eigenvalues(F,g), x -> LogFFE(x,z));
+    k := RECOG.EVNatRep(Ek,n,q);
+    M:= RECOG.OrderEigenvectors(g,List([0..n], x -> (n-2*x) mod (q-1) ), F, k);
+    ####### Added by me #######
+    if M = [] then
+        return ["fail"];
+    fi;
+    ###########################
+    #correct coefficients of ( x^(n-2)y^2,..,y^n)
+    con := IdentityMat(n+1,F);
+    while g*g^con = g^con*g do
+        con:= PseudoRandom(G);
+    od;
+    h := M*g^con*M^(-1); # <g,h> = G.
+    if not (h[1] in Subspace(VectorSpace(F,g), [IdentityMat(n+1,F)[1]]) or h[1] in Subspace(VectorSpace(F,g), [IdentityMat(n+1,F)[n+1] ])) then
+        abZero :=1;
+    else
+        abZero := n+1;
+    fi;
+    ab := h[abZero][1] / (n^(-1)* h[abZero][2]); mu_bet := z^0;
+    for i in [2..n] do
+        mu_i := mu_bet*Binomial(n,i-1)^(-1)*ab^(-1)* h[abZero][i] /(Binomial(n,i)^(-1)*h[abZero][i+1]);
+        mu_bet := mu_i;
+        M[i+1]:= mu_i^(-1)*M[i+1];
+    od;
+    return [M,g];
+end ;;
+
+
+
+## For a symmetric power G and elm of G construct image in PSL(2,q).
+## input: G   symmetric power of SL(2,q) of degree n < p.
+##        elm   arbitrary matrix in G.
+##        Trafo   the basis of the form (x^n, ..., y^n) for some element of order q-1 and eigenvectors x and y on the natrual module of SL(2,q).
+## return: image of elm in PSL(2,q) for one possible homomorphism of
+RECOG.HomToPSL := function (G, elm, Trafo, nOdd)
+    local
+    F, # field of matrix group
+    n, # degree of the symmetric power
+    z, # primitives element of the field
+    M, # the basis of the form (x^n,..., y^n)
+    h, # elm represented in M
+    k, # exponend of a^2 or d^2
+    ba,ca,da,a2,a,cd,bd,d2,d,bc,c2,c, #quotients ba = b/a.
+    V;
+    F:= FieldOfMatrixGroup(G); z:= PrimitiveElement(F);
+    M :=Trafo;
+    n:= Size(M)-1;
+    h := M * elm * M^(-1);
+    V:= VectorSpace(F,M); # equals F^(n+1)
+    if not h[1] in Subspace(V,[IdentityMat(n+1, F)[n+1]]) then #check if a=0
+        ba := (h[1][2]*n^(-1))/ h[1][1];
+        ca := h[2][1]/ h[1][1];
+        da := h[2][2]/h[1][1] - (n-1)*ba*ca; a2 :=1/ (da - ba*ca); k:=LogFFE(a2,z);
+        if nOdd then
+            a := h[1][1]/(a2)^(QuoInt(n,2));
+        elif k mod 2 = 0 then
+            a := z^(k/2);
+        else
+            ErrorNoReturn("Something is wrong.");
+        fi;
+        return [[a,ba*a],[ca*a,da*a]];
+    elif not h[n+1] in Subspace(V,[IdentityMat(n+1,F)[1] ]) then #check if d =0
+        cd := (h[n+1][n]*n^(-1))/h[n+1][n+1]; bd := h[n][n+1] / h[n+1][n+1];
+        d2 :=1 / ( - bd * cd);
+        k := LogFFE(d2,z);
+        if nOdd then
+            d := h[n+1][n+1] / (d2)^(QuoInt(n,2));
+            elif k mod 2 = 0 then d := z^(k/2);
+        else
+            ErrorNoReturn("Something is wrong.");
+        fi;
+        return [[0,bd*d],[cd*d,d]];
+    else
+        #if a=d=0
+        bc := h[1][n+1]/ h[2][n]; c2 := -(bc)^(-1);
+        k := LogFFE(c2,z);
+        if nOdd then
+            c := h[n+1][1] / (c2)^(QuoInt(n,2));
+        elif k mod 2 = 0 then
+            c := z^(k/2);
+        else
+            ErrorNoReturn("Something is wrong.");
+        fi;
+        return [[0,bc*c],[c,0]];
+    fi;
+end;;
+
+
+
+## MAIN FUNCTION
+## G n-th symmetric power of SL(2,q) in GL(T_n) for n < p.
+## return [homomorphism from G to PSL(2,q), homomorphism from SL(2,q) to G]
+RECOG.RecTest := function(G)
+    local Trafo ,d, F;
+    Trafo:= RECOG.SymmetricPowerBasis(G)[1];
+    if Trafo = "fail" then
+        return fail;
+    fi;
+    F:= FieldOfMatrixGroup(G); # underlying field
+    d:= Size(PseudoRandom(G))-1; # d-th symmetric power
+    return [x-> RECOG.HomToPSL(G,x,Trafo, d mod 2 = 1), x->Trafo^(-1)*RECOG.SymPowRepSL2(F,d,x)*Trafo];
+end;;
+
+
+
+#################################################################################
+## Constructive Recognition of SL(4,q) by Leedham-Green and O'Brien algorithm ###
+#################################################################################
+
+
+
+# Input: X where <X> is isomorphic to SL(4,q), F where X are dxd matrices over F_q = F (q = p^f prime power)
+RECOG.OneEvenSL4 := function(X,F)
+    local d;
+
+
+end;;
+
+
+
+#################################################################################
+#################################################################################
+#################################################################################
+
 
 # RECOG.MakeSLSituation := function(p,e,n,d)
 #   local a,q,r;
@@ -2440,7 +3243,7 @@ end;
 #   one := One(f);
 #   gram := ZeroMatrix(l,l,vecs);
 #   n := RowLength(vecs)/2;
-#   Assert(1,IsInt(n),ErrorNoReturn("RowLength must be even"));
+#   Assert(1,IsInt(n),Error("RowLength must be even"));
 #   for i in [1..l] do
 #     for j in [i+1..l] do
 #       v := zero;
@@ -2465,7 +3268,7 @@ end;
 #   for i in [1,3..d-1] do
 #     j := i+1;
 #     while j <= d do
-#       if not IsZero(gram[i,j]) then
+#       if not(IsZero(gram[i,j])) then
 #         s := gram[i,j]^-1;
 #         MultRowVector(bas[j],s);
 #         MultRowVector(gram[j],s);
@@ -2491,7 +3294,7 @@ end;
 #     if j > d then return [fail,"degenerate"]; fi;
 #     # Now i,i+1 is a symplectic pair, clean out the rest:
 #     for j in [i+2..d] do
-#       if not IsZero(gram[i,j]) then
+#       if not(IsZero(gram[i,j])) then
 #         s := gram[i,j];
 #         AddRowVector(bas[j],bas[i+1],-s);
 #         AddRowVector(gram[j],gram[i+1],-s);
@@ -2500,7 +3303,7 @@ end;
 #         od;
 #         Assert(1,gram = RECOG.ComputeGramSymplecticStandardForm(bas*vecs));
 #       fi;
-#       if not IsZero(gram[i+1,j]) then
+#       if not(IsZero(gram[i+1,j])) then
 #         s := gram[i+1,j];
 #         AddRowVector(bas[j],bas[i],s);
 #         AddRowVector(gram[j],gram[i],s);
@@ -2723,7 +3526,7 @@ end;
 #           fi;
 #         else
 #           if Size(s.f) = 2 then
-#             ErrorNoReturn("This does not work for GF(2).");
+#             Error("This does not work for GF(2).");
 #           fi;
 #           t := t * s.delta;
 #           v[2*n-1] := v[2*n-1] * zeta;
@@ -2736,12 +3539,12 @@ end;
 #           fi;
 #           coeff := zeta;
 #         fi;
-#         Assert(1,v=vorig*t and (M = fail or Morig*t=M),ErrorNoReturn("Hallo 0"));
+#         Assert(1,v=vorig*t and (M = fail or Morig*t=M),Error("Hallo 0"));
 #       fi;
-#       if IsZero(v[ei]) or not IsZero(coeff-v[fI]) then
+#       if IsZero(v[ei]) or not(IsZero(coeff-v[fI])) then
 #         # The first easy case:
 #         # First kill v[ei] if need be:
-#         if not IsZero(v[ei]) then
+#         if not(IsZero(v[ei])) then
 #           sc := -v[ei]/(coeff-v[fI]);
 #           si := IntVecFFE(Coefficients(s.can,sc));
 #           for k in [1..ext] do
@@ -2756,10 +3559,10 @@ end;
 #               M[l,2*n] := M[l,2*n] + sc2;
 #             od;
 #           fi;
-#           Assert(1,v=vorig*t and (M = fail or Morig*t=M),ErrorNoReturn("Hallo 1"));
+#           Assert(1,v=vorig*t and (M = fail or Morig*t=M),Error("Hallo 1"));
 #         fi;
 #         # Now kill v[fI] if need be:
-#         if not IsZero(v[fI]) then
+#         if not(IsZero(v[fI])) then
 #           sc := -v[fI]/coeff;
 #           si := IntVecFFE(Coefficients(s.can,sc));
 #           for k in [1..ext] do
@@ -2774,9 +3577,9 @@ end;
 #               M[l,2*n] := M[l,2*n] + sc2;
 #             od;
 #           fi;
-#           Assert(1,v=vorig*t and (M = fail or Morig*t=M),ErrorNoReturn("Hallo 2"));
+#           Assert(1,v=vorig*t and (M = fail or Morig*t=M),Error("Hallo 2"));
 #         fi;
-#       elif not IsZero(one+v[ei]) then
+#       elif not(IsZero(one+v[ei])) then
 #         # The second easy case:
 #         # Here v[fI] = 1 and v[ei] <> 0:
 #         # First kill v[fI]:
@@ -2794,7 +3597,7 @@ end;
 #             M[l,2*n] := M[l,2*n] + sc2;
 #           od;
 #         fi;
-#         Assert(1,v=vorig*t and (M = fail or Morig*t=M),ErrorNoReturn("Hallo 3"));
+#         Assert(1,v=vorig*t and (M = fail or Morig*t=M),Error("Hallo 3"));
 #         # Now kill v[ei] if need be:
 #         sc := -v[ei]/coeff;
 #         si := IntVecFFE(Coefficients(s.can,sc));
@@ -2810,7 +3613,7 @@ end;
 #             M[l,2*n] := M[l,2*n] + sc2;
 #           od;
 #         fi;
-#         Assert(1,v=vorig*t and (M = fail or Morig*t=M),ErrorNoReturn("Hallo 4"));
+#         Assert(1,v=vorig*t and (M = fail or Morig*t=M),Error("Hallo 4"));
 #       fi;
 #       if coeff = zeta then
 #         # Fix the e_n coefficient again:
@@ -2823,11 +3626,11 @@ end;
 #             M[l,2*n] := M[l,2*n] * zeta;
 #           od;
 #         fi;
-#         Assert(1,v=vorig*t and (M = fail or Morig*t=M),ErrorNoReturn("Hallo 5"));
+#         Assert(1,v=vorig*t and (M = fail or Morig*t=M),Error("Hallo 5"));
 #       fi;
 #     od;
 #     # Finally arrange fn component to 0:
-#     if not IsZero(v[2*n]) then
+#     if not(IsZero(v[2*n])) then
 #       sc := -v[2*n];
 #       si := IntVecFFE(Coefficients(s.can,sc));
 #       for k in [1..ext] do
@@ -2839,7 +3642,7 @@ end;
 #           M[l,2*n] := M[l,2*n] + M[l,2*n-1] * sc;
 #         od;
 #       fi;
-#       Assert(1,v=vorig*t and (M = fail or Morig*t=M),ErrorNoReturn("Hallo 6"));
+#       Assert(1,v=vorig*t and (M = fail or Morig*t=M),Error("Hallo 6"));
 #     fi;
 #     return t;
 #   end;
@@ -3062,7 +3865,7 @@ SLPforElementFuncsProjective.PSL2 := function(ri,x)
   fi;
   y := ri!.nicebas * x * ri!.nicebasi;
   det := DeterminantMat(y);
-  if not IsOne(det) then
+  if not(IsOne(det)) then
       z := PrimitiveRoot(ri!.field);
       log := LogFFE(det,z);
       y := y * z^(-log*ri!.gcd.coeff1/ri!.gcd.gcd);
@@ -3070,7 +3873,7 @@ SLPforElementFuncsProjective.PSL2 := function(ri,x)
   # At this point, y has determinant 1; but we consider it modulo scalars.
   # To make sure that different coset reps behave the same, we scale it
   # with a suitable primitive d-th root of unity.
-  if not IsBound(ri!.normlist) then
+  if not(IsBound(ri!.normlist)) then
       ri!.normlist := RECOG.SetupNormalisationListForPSLd(ri!.field,
                                                           ri!.gcd.gcd);
   fi;
@@ -3153,7 +3956,7 @@ SLPforElementFuncsProjective.PSLd := function(ri,x)
   fi;
   y := ri!.nicebas * x * ri!.nicebasi;
   det := DeterminantMat(y);
-  if not IsOne(det) then
+  if not(IsOne(det)) then
       # At this point, y is in the kernel of the determinant map *mod scalars*.
       # That means that det may not be 1 -- it can be any d-th power.
       # We thus can compute a d-th root of 1/det, and scale y with it,
@@ -3168,7 +3971,7 @@ SLPforElementFuncsProjective.PSLd := function(ri,x)
   # At this point, y has determinant 1; but we consider it modulo scalars.
   # To make sure that different coset reps behave the same, we scale it
   # with a suitable primitive d-th root of unity.
-  if not IsBound(ri!.normlist) then
+  if not(IsBound(ri!.normlist)) then
       ri!.normlist := RECOG.SetupNormalisationListForPSLd(ri!.field,
                                                           ri!.gcd.gcd);
   fi;
@@ -3178,12 +3981,7 @@ SLPforElementFuncsProjective.PSLd := function(ri,x)
   return slp;
 end;
 
-#! @BeginChunk ClassicalNatural
-#! TODO
-#! @EndChunk
-BindRecogMethod(FindHomMethodsProjective, "ClassicalNatural",
-"check whether it is a classical group in its natural representation",
-function(ri, g)
+FindHomMethodsProjective.ClassicalNatural := function(ri,g)
   local changed,classical,d,det,ext,f,gcd,gens,gg,gm,i,p,pr,q,root,std,stdg,z;
   d := ri!.dimension;
   f := ri!.field;
@@ -3193,7 +3991,7 @@ function(ri, g)
 
   # First check whether we are applicable:
   if d = 2 then
-      if not RECOG.IsThisSL2Natural(GeneratorsOfGroup(g),f) then
+      if not(RECOG.IsThisSL2Natural(GeneratorsOfGroup(g),f)) then
           Info(InfoRecog,2,"ClassicalNatural: Is not PSL_2.");
           return fail; # FIXME: fail = TemporaryFailure here really correct?
       fi;
@@ -3212,10 +4010,10 @@ function(ri, g)
   gcd := Gcdex(d,q-1);
   for i in [1..Length(gens)] do
       det := DeterminantMat(gens[i]);
-      if not IsOne(det) then
+      if not(IsOne(det)) then
           root := RECOG.ComputeRootInFiniteField(det,gcd.gcd,f);
           if root = fail then
-              ErrorNoReturn("Should not have happened, 15634, tell Max!");
+              Error("Should not have happened, 15634, tell Max!");
           fi;
           gens[i] := gens[i] * root;
           changed := true;
@@ -3260,7 +4058,7 @@ function(ri, g)
       ri!.gcd := gcd;
       SetFilterObj(ri,IsLeaf);
       SetSize(ri,(q+1)*(q-1)*q/GcdInt(2,q-1));
-      SetIsRecogInfoForSimpleGroup(ri, q>3);
+      SetIsRecogInfoForSimpleGroup(ri,true);
       Setslpforelement(ri,SLPforElementFuncsProjective.PSL2);
       return Success;
   else   # bigger than 2:
@@ -3272,7 +4070,7 @@ function(ri, g)
                    "case, handing over to Schreier-Sims.");
               ri!.comment := Concatenation("_SL(",String(d),",",String(q),")",
                                            "_StabilizerChain");
-              return FindHomMethodsProjective.StabilizerChainProj(ri,g);
+              return FindHomMethodsProjective.StabilizerChain(ri,g);
           fi;
           Info(InfoRecog,2,"ClassicalNatural: this is PSL_n!");
           std := RECOG.FindStdGens_SL(gm,f);
@@ -3297,4 +4095,20 @@ function(ri, g)
 
   return fail; # FIXME: fail = TemporaryFailure here really correct?
 
-end);
+end;
+
+##
+##  This program is free software: you can redistribute it and/or modify
+##  it under the terms of the GNU General Public License as published by
+##  the Free Software Foundation, either version 3 of the License, or
+##  (at your option) any later version.
+##
+##  This program is distributed in the hope that it will be useful,
+##  but WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##  GNU General Public License for more details.
+##
+##  You should have received a copy of the GNU General Public License
+##  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+
