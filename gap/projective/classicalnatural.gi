@@ -1,16 +1,16 @@
 #############################################################################
-#
-# Code for the SL seems to work!!!
-#
-#############################################################################
 ##
-##  classicalnatural.gi
-##                                recog package
-##                                                        Max Neunhoeffer
-##                                                            Ákos Seress
+##  This file is part of recog, a package for the GAP computer algebra system
+##  which provides a collection of methods for the constructive recognition
+##  of groups.
 ##
-##  Copyright 2006-2009 by the authors.
-##  This file is free software, see license information at the end.
+##  This files's authors include Max Neunhöffer, Ákos Seress.
+##
+##  Copyright of recog belongs to its developers whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
+##
+##  SPDX-License-Identifier: GPL-3.0-or-later
+##
 ##
 ##  Constructive recognition of classical groups in their natural
 ##  representation.
@@ -137,7 +137,7 @@ InstallMethod( Eigenspaces, "for a field and a memory element matrix",
 #       for i in [1..2] do
 #           for j in [1..n] do
 #               w[i] := o[j]*gens[i]-o[j];
-#               if not(IsZero(w[i])) then break; fi;
+#               if not IsZero(w[i]) then break; fi;
 #           od;
 #       od;
 #       return [Group(gens),VectorSpace(GF(q),w)];
@@ -178,7 +178,7 @@ InstallMethod( Eigenspaces, "for a field and a memory element matrix",
 #           for j in [1..3] do
 #               for i in [1..n] do
 #                   w := o[i]*gens[j]-o[i];
-#                   if not(IsZero(w)) then break; fi;
+#                   if not IsZero(w) then break; fi;
 #               od;
 #               # Since y has order y at least one basis vector is moved.
 #               ns[j] := w;
@@ -286,7 +286,7 @@ InstallMethod( Eigenspaces, "for a field and a memory element matrix",
 #   if r.factors[1] <> r.factors[2] then
 #       ev := -Value(r.factors[1],0*Z(q));
 #       ns := NullspaceMat(StripMemory(r.el)-ev*StripMemory(One(y)));
-#       if not(IsMutable(ns)) then ns := MutableCopyMat(ns); fi;
+#       if not IsMutable(ns) then ns := MutableCopyMat(ns); fi;
 #       # this is a 1xn matrix now
 #       ev := -Value(r.factors[2],0*Z(q));
 #       Append(ns,NullspaceMat(StripMemory(r.el)-ev*StripMemory(One(y))));
@@ -295,7 +295,7 @@ InstallMethod( Eigenspaces, "for a field and a memory element matrix",
 #       ev := -Value(r.factors[1],0*Z(q));
 #       ns := NullspaceMat((StripMemory(r.el)
 #                                      -ev*StripMemory(One(y)))^2);
-#       if not(IsMutable(ns)) then ns := MutableCopyMat(ns); fi;
+#       if not IsMutable(ns) then ns := MutableCopyMat(ns); fi;
 #   fi;
 # 
 #   count := 0;
@@ -349,7 +349,7 @@ InstallMethod( Eigenspaces, "for a field and a memory element matrix",
 #     degrees:=List(factors,Degree);
 #     if SortedList(degrees)=[1,1,n-2] then
 #        yy := y^(q^(n-2)-1);
-#        if not(IsOne(yy)) and IsOne(yy^2) then ready := true; fi;
+#        if not IsOne(yy) and IsOne(yy^2) then ready := true; fi;
 #     fi;
 #   until ready;
 #   repeat
@@ -359,13 +359,13 @@ InstallMethod( Eigenspaces, "for a field and a memory element matrix",
 #   i := 1;
 #   while i <= n do
 #     w := o[i]*yy-o[i];
-#     if not(IsZero(w)) then break; fi;
+#     if not IsZero(w) then break; fi;
 #     i := i + 1;
 #   od;
 #   i := 1;
 #   while i <= n do
 #     ww := o[i]*z-o[i];
-#     if not(IsZero(ww)) then break; fi;
+#     if not IsZero(ww) then break; fi;
 #     i := i + 1;
 #   od;
 #   return [Group(z,yy),VectorSpace(GF(2),[w,ww])];
@@ -400,7 +400,7 @@ InstallMethod( Eigenspaces, "for a field and a memory element matrix",
 #      h:=Group(gens);
 #      if q = 4 then
 #        S := StabilizerChain(h);
-#        if not(Size(S) in [60480,3*60480]) then continue; fi;
+#        if not Size(S) in [60480,3*60480] then continue; fi;
 #        pos := Position(degrees,1);
 #        eva := -Value(factors[pos],0*Z(q));
 #        ns := NullspaceMat(StripMemory(y)-eva*One(StripMemory(y)));
@@ -460,7 +460,9 @@ RECOG.FindStdGensUsingBSGS := function(g,stdgens,projective,large)
   l := List(stdgens,x->SiftGroupElementSLP(S,x));
   gens := EmptyPlist(Length(stdgens));
   for i in [1..Length(stdgens)] do
-      if not l[i].isone then return fail; fi;
+      if not l[i].isone then
+          return fail;
+      fi;
       Add(gens,ResultOfStraightLineProgram(l[i].slp,strong));
   od;
   return SLPOfElms(gens);
@@ -469,7 +471,7 @@ end;
 RECOG.ResetSLstd := function(r)
   r.left := One(r.a);
   r.right := One(r.a);
-  if not(IsBound(r.cache)) then
+  if not IsBound(r.cache) then
       r.cache := [EmptyPlist(100),EmptyPlist(100),
                   List([1..r.ext],i->[]),     # rowopcache
                   List([1..r.ext],i->[])];    # colopcache
@@ -543,7 +545,7 @@ RECOG.DoRowOp_SL := function(m,i,j,lambda,std)
   newnew := std.One;
   coeffs := RECOG.FindFFCoeffs(std,lambda);
   for k in [1..std.ext] do
-      if not(IsZero(coeffs[k])) then
+      if not IsZero(coeffs[k]) then
           if IsBound(std.cache[3][k][i]) and
              IsBound(std.cache[3][k][i][j]) then
               new := std.cache[3][k][i][j];
@@ -568,7 +570,7 @@ RECOG.DoRowOp_SL := function(m,i,j,lambda,std)
                   if i > j+1 then new := Getbj(i-j-1) * new; fi;
                   if j > 1 then new := Getai(j-1) * new; fi;
               fi;
-              if not(IsBound(std.cache[3][k][i])) then
+              if not IsBound(std.cache[3][k][i]) then
                   std.cache[3][k][i] := [];
               fi;
               std.cache[3][k][i][j] := new;
@@ -577,7 +579,7 @@ RECOG.DoRowOp_SL := function(m,i,j,lambda,std)
           newnew := new^coeffs[k] * newnew;
       fi;
   od;
-  if m <> false and not(IsZero(lambda)) then m[i] := m[i] + m[j] * lambda; fi;
+  if m <> false and not IsZero(lambda) then m[i] := m[i] + m[j] * lambda; fi;
   return newnew;
 end;
 
@@ -620,7 +622,7 @@ RECOG.DoColOp_SL := function(m,i,j,lambda,std)
   newnew := std.One;
   coeffs := RECOG.FindFFCoeffs(std,lambda);
   for k in [1..std.ext] do
-      if not(IsZero(coeffs[k])) then
+      if not IsZero(coeffs[k]) then
           if IsBound(std.cache[4][k][i]) and
              IsBound(std.cache[4][k][i][j]) then
               new := std.cache[4][k][i][j];
@@ -645,7 +647,7 @@ RECOG.DoColOp_SL := function(m,i,j,lambda,std)
                   if i > j+1 then new := Getbj(i-j-1) * new; fi;
                   if j > 1 then new := Getai(j-1) * new; fi;
               fi;
-              if not(IsBound(std.cache[4][k][i])) then
+              if not IsBound(std.cache[4][k][i]) then
                   std.cache[4][k][i] := [];
               fi;
               std.cache[4][k][i][j] := new;
@@ -654,7 +656,7 @@ RECOG.DoColOp_SL := function(m,i,j,lambda,std)
           newnew := newnew * new^coeffs[k];
       fi;
   od;
-  if m <> false and not(IsZero(lambda)) then
+  if m <> false and not IsZero(lambda) then
       for k in [1..Length(m)] do
           m[k][j] := m[k][j] + m[k][i] * lambda;
       od;
@@ -704,7 +706,7 @@ RECOG.ExpressInStd_SL2 := function(m,std)
       mi := InverseMutable(m);
   fi;
   std.left := std.One;
-  if not(IsOne(mi[1,1])) then
+  if not IsOne(mi[1,1]) then
       if IsZero(mi[2,1]) then
           RECOG.DoRowOp_SL(mi,2,1,std.one,std);
           # Now mi[2,1] is non-zero
@@ -712,11 +714,11 @@ RECOG.ExpressInStd_SL2 := function(m,std)
       RECOG.DoRowOp_SL(mi,1,2,(std.one-mi[1,1])/mi[2,1],std);
   fi;
   # Now mi[1,1] is equal to one
-  if not(IsZero(mi[2,1])) then
+  if not IsZero(mi[2,1]) then
       RECOG.DoRowOp_SL(mi,2,1,-mi[2,1],std);
   fi;
   # Now mi[2,1] is equal to zero and thus mi[2,2] equal to one
-  if not(IsZero(mi[1,2])) then
+  if not IsZero(mi[1,2]) then
       RECOG.DoRowOp_SL(mi,1,2,-mi[1,2],std);
   fi;
   # Now mi is the identity matrix, the element collected in std
@@ -738,7 +740,7 @@ RECOG.ExpressInStd_SL := function(m,std)
   std.left := std.One;
   d := Length(m);
   for i in [1..d] do
-      if not(IsOne(mi[i,i])) then
+      if not IsOne(mi[i,i]) then
           pos := First([i+1..d],k->not IsZero(mi[k,i]));
           if pos = fail then
               pos := i+1;
@@ -748,7 +750,7 @@ RECOG.ExpressInStd_SL := function(m,std)
       fi;
       # Now mi[i,i] is equal to one
       for j in Concatenation([1..i-1],[i+1..d]) do
-          if not(IsZero(mi[j,i])) then
+          if not IsZero(mi[j,i]) then
               RECOG.DoRowOp_SL(mi,j,i,-mi[j,i],std);
           fi;
       od;
@@ -760,32 +762,43 @@ RECOG.ExpressInStd_SL := function(m,std)
   return SLPOfElm(std.left);
 end;
 
-InstallOtherMethod( \*, "for two funny product objects",
-  [ IsFunnyProductObject, IsFunnyProductObject ],
-  function(a,b)
-    return Objectify(FunnyProductObjsType,[a![1]+a![2]*b![1],a![2]*b![2]]);
-  end );
 
-InstallOtherMethod( InverseSameMutability, "for a funny product object",
-  [ IsFunnyProductObject ],
-  function(a)
-    local i;
-    i := a![2]^-1;
-    return Objectify(FunnyProductObjsType,[-i*a![1],i]);
-  end );
 
-InstallOtherMethod( OneMutable, "for a funny product object",
-  [ IsFunnyProductObject ],
-  function(a)
-    return Objectify(FunnyProductObjsType,[Zero(a![1]),OneMutable(a![2])]);
-  end );
-
-InstallMethod( FunnyProductObj, "for two arbitrary objects",
-  [ IsObject, IsObject ],
-  function(a,b)
-    return Objectify(FunnyProductObjsType,[a,b]);
-  end );
-
+# BindGlobal("FunnyProductObjsFamily",NewFamily("FunnyProductObjsFamily"));
+# DeclareCategory("IsFunnyProductObject",
+#    IsPositionalObjectRep and IsMultiplicativeElement and
+#    IsMultiplicativeElementWithInverse );
+# BindGlobal("FunnyProductObjsType",
+#    NewType(FunnyProductObjsFamily,IsFunnyProductObject));
+# DeclareOperation("FunnyProductObj",[IsObject,IsObject]);
+# 
+# 
+# InstallOtherMethod( \*, "for two funny product objects",
+#   [ IsFunnyProductObject, IsFunnyProductObject ],
+#   function(a,b)
+#     return Objectify(FunnyProductObjsType,[a![1]+a![2]*b![1],a![2]*b![2]]);
+#   end );
+# 
+# InstallOtherMethod( InverseSameMutability, "for a funny product object",
+#   [ IsFunnyProductObject ],
+#   function(a)
+#     local i;
+#     i := a![2]^-1;
+#     return Objectify(FunnyProductObjsType,[-i*a![1],i]);
+#   end );
+# 
+# InstallOtherMethod( OneMutable, "for a funny product object",
+#   [ IsFunnyProductObject ],
+#   function(a)
+#     return Objectify(FunnyProductObjsType,[Zero(a![1]),OneMutable(a![2])]);
+#   end );
+# 
+# InstallMethod( FunnyProductObj, "for two arbitrary objects",
+#   [ IsObject, IsObject ],
+#   function(a,b)
+#     return Objectify(FunnyProductObjsType,[a,b]);
+#   end );
+# 
 # FIXME: unused? but see misc/work/DOWORK.
 # Perhaps this was / is meant as a replacement for RECOG.FindStdGens_SL
 # in even characteristic.
@@ -807,7 +820,7 @@ InstallMethod( FunnyProductObj, "for two arbitrary objects",
 #   q := Size(f);
 #   ext := DegreeOverPrimeField(f);
 #   d := DimensionOfMatrixGroup(sld);
-#   if not(IsObjWithMemory(GeneratorsOfGroup(sld)[1])) then
+#   if not IsObjWithMemory(GeneratorsOfGroup(sld)[1]) then
 #       sld := GroupWithMemory(sld);
 #   fi;
 # 
@@ -896,7 +909,7 @@ InstallMethod( FunnyProductObj, "for two arbitrary objects",
 # 
 #           # w is supposed to become the next basis vector number n+1.
 #           # So we need to throw away one of bas{[n+1..d]}:
-#           i := First([n+1..d],i->not(IsZero(ScalarProduct(w,basit[i]))));
+#           i := First([n+1..d],i->not IsZero(ScalarProduct(w,basit[i])));
 #           Remove(bas,i);
 #           Add(bas,w,n+1);
 #           # However, we want that the rest of them bas{[n+2..d]} is invariant
@@ -905,7 +918,7 @@ InstallMethod( FunnyProductObj, "for two arbitrary objects",
 #           pos := PositionNonZero(diffw);
 #           for i in [n+2..d] do
 #               diffv := bas[i]*y-bas[i];
-#               if not(IsZero(diffv)) then
+#               if not IsZero(diffv) then
 #                   bas[i] := bas[i] - (diffv[pos]/diffw[pos]) * w;
 #               fi;
 #           od;
@@ -956,9 +969,9 @@ InstallMethod( FunnyProductObj, "for two arbitrary objects",
 #           yf := std.left * yf * std.right;
 #           z := yy+One(yy);
 #           zf := yf;
-#           if not(IsZero(z[n,n])) or not(IsOne(z[n,n+1])) or
-#              not(IsZero(z[n+1,n+1])) or not(IsOne(z[n+1,n])) then
-#               Error("How on earth could this happen???");
+#           if not IsZero(z[n,n]) or not IsOne(z[n,n+1]) or
+#              not IsZero(z[n+1,n+1]) or not IsOne(z[n+1,n]) then
+#               ErrorNoReturn("How on earth could this happen???");
 #           fi;
 #       else  # q > 2
 #           while true do   # will be left by break when we had success!
@@ -1063,13 +1076,13 @@ InstallMethod( FunnyProductObj, "for two arbitrary objects",
 #       std.right := std.One;
 #       # Now we clean out the last row of z:
 #       for i in [1..n-1] do
-#           if not(IsZero(z[n+1,i])) then
+#           if not IsZero(z[n+1,i]) then
 #               RECOG.DoColOp_SL(z,n,i,-z[n+1,i],std);
 #           fi;
 #       od;
 #       # Now we clean out the second last row of z:
 #       for i in [1..n-1] do
-#           if not(IsZero(z[n,i])) then
+#           if not IsZero(z[n,i]) then
 #               RECOG.DoRowOp_SL(z,n,i,-z[n,i],std);
 #           fi;
 #       od;
@@ -2615,7 +2628,6 @@ RECOG.SLn_UpStep := function(w)
       # Clean out the first n entries to go to the fixed space of SL_n:
       zerovec := Zero(newpart[1]);
       for i in [1..(w.n-1)] do
-          Display(i);
           CopySubVector(zerovec,newpart[i],[1..w.n],[1..w.n]);
       od;
       MB := MutableBasis(w.f,[],zerovec);
@@ -3152,7 +3164,6 @@ end;;
 #################################################################################
 #################################################################################
 
-
 # RECOG.MakeSLSituation := function(p,e,n,d)
 #   local a,q,r;
 #   q := p^e;
@@ -3243,7 +3254,7 @@ end;;
 #   one := One(f);
 #   gram := ZeroMatrix(l,l,vecs);
 #   n := RowLength(vecs)/2;
-#   Assert(1,IsInt(n),Error("RowLength must be even"));
+#   Assert(1,IsInt(n),ErrorNoReturn("RowLength must be even"));
 #   for i in [1..l] do
 #     for j in [i+1..l] do
 #       v := zero;
@@ -3268,7 +3279,7 @@ end;;
 #   for i in [1,3..d-1] do
 #     j := i+1;
 #     while j <= d do
-#       if not(IsZero(gram[i,j])) then
+#       if not IsZero(gram[i,j]) then
 #         s := gram[i,j]^-1;
 #         MultRowVector(bas[j],s);
 #         MultRowVector(gram[j],s);
@@ -3294,7 +3305,7 @@ end;;
 #     if j > d then return [fail,"degenerate"]; fi;
 #     # Now i,i+1 is a symplectic pair, clean out the rest:
 #     for j in [i+2..d] do
-#       if not(IsZero(gram[i,j])) then
+#       if not IsZero(gram[i,j]) then
 #         s := gram[i,j];
 #         AddRowVector(bas[j],bas[i+1],-s);
 #         AddRowVector(gram[j],gram[i+1],-s);
@@ -3303,7 +3314,7 @@ end;;
 #         od;
 #         Assert(1,gram = RECOG.ComputeGramSymplecticStandardForm(bas*vecs));
 #       fi;
-#       if not(IsZero(gram[i+1,j])) then
+#       if not IsZero(gram[i+1,j]) then
 #         s := gram[i+1,j];
 #         AddRowVector(bas[j],bas[i],s);
 #         AddRowVector(gram[j],gram[i],s);
@@ -3526,7 +3537,7 @@ end;;
 #           fi;
 #         else
 #           if Size(s.f) = 2 then
-#             Error("This does not work for GF(2).");
+#             ErrorNoReturn("This does not work for GF(2).");
 #           fi;
 #           t := t * s.delta;
 #           v[2*n-1] := v[2*n-1] * zeta;
@@ -3539,12 +3550,12 @@ end;;
 #           fi;
 #           coeff := zeta;
 #         fi;
-#         Assert(1,v=vorig*t and (M = fail or Morig*t=M),Error("Hallo 0"));
+#         Assert(1,v=vorig*t and (M = fail or Morig*t=M),ErrorNoReturn("Hallo 0"));
 #       fi;
-#       if IsZero(v[ei]) or not(IsZero(coeff-v[fI])) then
+#       if IsZero(v[ei]) or not IsZero(coeff-v[fI]) then
 #         # The first easy case:
 #         # First kill v[ei] if need be:
-#         if not(IsZero(v[ei])) then
+#         if not IsZero(v[ei]) then
 #           sc := -v[ei]/(coeff-v[fI]);
 #           si := IntVecFFE(Coefficients(s.can,sc));
 #           for k in [1..ext] do
@@ -3559,10 +3570,10 @@ end;;
 #               M[l,2*n] := M[l,2*n] + sc2;
 #             od;
 #           fi;
-#           Assert(1,v=vorig*t and (M = fail or Morig*t=M),Error("Hallo 1"));
+#           Assert(1,v=vorig*t and (M = fail or Morig*t=M),ErrorNoReturn("Hallo 1"));
 #         fi;
 #         # Now kill v[fI] if need be:
-#         if not(IsZero(v[fI])) then
+#         if not IsZero(v[fI]) then
 #           sc := -v[fI]/coeff;
 #           si := IntVecFFE(Coefficients(s.can,sc));
 #           for k in [1..ext] do
@@ -3577,9 +3588,9 @@ end;;
 #               M[l,2*n] := M[l,2*n] + sc2;
 #             od;
 #           fi;
-#           Assert(1,v=vorig*t and (M = fail or Morig*t=M),Error("Hallo 2"));
+#           Assert(1,v=vorig*t and (M = fail or Morig*t=M),ErrorNoReturn("Hallo 2"));
 #         fi;
-#       elif not(IsZero(one+v[ei])) then
+#       elif not IsZero(one+v[ei]) then
 #         # The second easy case:
 #         # Here v[fI] = 1 and v[ei] <> 0:
 #         # First kill v[fI]:
@@ -3597,7 +3608,7 @@ end;;
 #             M[l,2*n] := M[l,2*n] + sc2;
 #           od;
 #         fi;
-#         Assert(1,v=vorig*t and (M = fail or Morig*t=M),Error("Hallo 3"));
+#         Assert(1,v=vorig*t and (M = fail or Morig*t=M),ErrorNoReturn("Hallo 3"));
 #         # Now kill v[ei] if need be:
 #         sc := -v[ei]/coeff;
 #         si := IntVecFFE(Coefficients(s.can,sc));
@@ -3613,7 +3624,7 @@ end;;
 #             M[l,2*n] := M[l,2*n] + sc2;
 #           od;
 #         fi;
-#         Assert(1,v=vorig*t and (M = fail or Morig*t=M),Error("Hallo 4"));
+#         Assert(1,v=vorig*t and (M = fail or Morig*t=M),ErrorNoReturn("Hallo 4"));
 #       fi;
 #       if coeff = zeta then
 #         # Fix the e_n coefficient again:
@@ -3626,11 +3637,11 @@ end;;
 #             M[l,2*n] := M[l,2*n] * zeta;
 #           od;
 #         fi;
-#         Assert(1,v=vorig*t and (M = fail or Morig*t=M),Error("Hallo 5"));
+#         Assert(1,v=vorig*t and (M = fail or Morig*t=M),ErrorNoReturn("Hallo 5"));
 #       fi;
 #     od;
 #     # Finally arrange fn component to 0:
-#     if not(IsZero(v[2*n])) then
+#     if not IsZero(v[2*n]) then
 #       sc := -v[2*n];
 #       si := IntVecFFE(Coefficients(s.can,sc));
 #       for k in [1..ext] do
@@ -3642,7 +3653,7 @@ end;;
 #           M[l,2*n] := M[l,2*n] + M[l,2*n-1] * sc;
 #         od;
 #       fi;
-#       Assert(1,v=vorig*t and (M = fail or Morig*t=M),Error("Hallo 6"));
+#       Assert(1,v=vorig*t and (M = fail or Morig*t=M),ErrorNoReturn("Hallo 6"));
 #     fi;
 #     return t;
 #   end;
@@ -3865,7 +3876,7 @@ SLPforElementFuncsProjective.PSL2 := function(ri,x)
   fi;
   y := ri!.nicebas * x * ri!.nicebasi;
   det := DeterminantMat(y);
-  if not(IsOne(det)) then
+  if not IsOne(det) then
       z := PrimitiveRoot(ri!.field);
       log := LogFFE(det,z);
       y := y * z^(-log*ri!.gcd.coeff1/ri!.gcd.gcd);
@@ -3873,7 +3884,7 @@ SLPforElementFuncsProjective.PSL2 := function(ri,x)
   # At this point, y has determinant 1; but we consider it modulo scalars.
   # To make sure that different coset reps behave the same, we scale it
   # with a suitable primitive d-th root of unity.
-  if not(IsBound(ri!.normlist)) then
+  if not IsBound(ri!.normlist) then
       ri!.normlist := RECOG.SetupNormalisationListForPSLd(ri!.field,
                                                           ri!.gcd.gcd);
   fi;
@@ -3956,7 +3967,7 @@ SLPforElementFuncsProjective.PSLd := function(ri,x)
   fi;
   y := ri!.nicebas * x * ri!.nicebasi;
   det := DeterminantMat(y);
-  if not(IsOne(det)) then
+  if not IsOne(det) then
       # At this point, y is in the kernel of the determinant map *mod scalars*.
       # That means that det may not be 1 -- it can be any d-th power.
       # We thus can compute a d-th root of 1/det, and scale y with it,
@@ -3971,7 +3982,7 @@ SLPforElementFuncsProjective.PSLd := function(ri,x)
   # At this point, y has determinant 1; but we consider it modulo scalars.
   # To make sure that different coset reps behave the same, we scale it
   # with a suitable primitive d-th root of unity.
-  if not(IsBound(ri!.normlist)) then
+  if not IsBound(ri!.normlist) then
       ri!.normlist := RECOG.SetupNormalisationListForPSLd(ri!.field,
                                                           ri!.gcd.gcd);
   fi;
@@ -3981,7 +3992,12 @@ SLPforElementFuncsProjective.PSLd := function(ri,x)
   return slp;
 end;
 
-FindHomMethodsProjective.ClassicalNatural := function(ri,g)
+#! @BeginChunk ClassicalNatural
+#! TODO
+#! @EndChunk
+BindRecogMethod(FindHomMethodsProjective, "ClassicalNatural",
+"check whether it is a classical group in its natural representation",
+function(ri, g)
   local changed,classical,d,det,ext,f,gcd,gens,gg,gm,i,p,pr,q,root,std,stdg,z;
   d := ri!.dimension;
   f := ri!.field;
@@ -3991,7 +4007,7 @@ FindHomMethodsProjective.ClassicalNatural := function(ri,g)
 
   # First check whether we are applicable:
   if d = 2 then
-      if not(RECOG.IsThisSL2Natural(GeneratorsOfGroup(g),f)) then
+      if not RECOG.IsThisSL2Natural(GeneratorsOfGroup(g),f) then
           Info(InfoRecog,2,"ClassicalNatural: Is not PSL_2.");
           return fail; # FIXME: fail = TemporaryFailure here really correct?
       fi;
@@ -4010,10 +4026,10 @@ FindHomMethodsProjective.ClassicalNatural := function(ri,g)
   gcd := Gcdex(d,q-1);
   for i in [1..Length(gens)] do
       det := DeterminantMat(gens[i]);
-      if not(IsOne(det)) then
+      if not IsOne(det) then
           root := RECOG.ComputeRootInFiniteField(det,gcd.gcd,f);
           if root = fail then
-              Error("Should not have happened, 15634, tell Max!");
+              ErrorNoReturn("Should not have happened, 15634, tell Max!");
           fi;
           gens[i] := gens[i] * root;
           changed := true;
@@ -4058,7 +4074,7 @@ FindHomMethodsProjective.ClassicalNatural := function(ri,g)
       ri!.gcd := gcd;
       SetFilterObj(ri,IsLeaf);
       SetSize(ri,(q+1)*(q-1)*q/GcdInt(2,q-1));
-      SetIsRecogInfoForSimpleGroup(ri,true);
+      SetIsRecogInfoForSimpleGroup(ri, q>3);
       Setslpforelement(ri,SLPforElementFuncsProjective.PSL2);
       return Success;
   else   # bigger than 2:
@@ -4070,7 +4086,7 @@ FindHomMethodsProjective.ClassicalNatural := function(ri,g)
                    "case, handing over to Schreier-Sims.");
               ri!.comment := Concatenation("_SL(",String(d),",",String(q),")",
                                            "_StabilizerChain");
-              return FindHomMethodsProjective.StabilizerChain(ri,g);
+              return FindHomMethodsProjective.StabilizerChainProj(ri,g);
           fi;
           Info(InfoRecog,2,"ClassicalNatural: this is PSL_n!");
           std := RECOG.FindStdGens_SL(gm,f);
@@ -4095,20 +4111,4 @@ FindHomMethodsProjective.ClassicalNatural := function(ri,g)
 
   return fail; # FIXME: fail = TemporaryFailure here really correct?
 
-end;
-
-##
-##  This program is free software: you can redistribute it and/or modify
-##  it under the terms of the GNU General Public License as published by
-##  the Free Software Foundation, either version 3 of the License, or
-##  (at your option) any later version.
-##
-##  This program is distributed in the hope that it will be useful,
-##  but WITHOUT ANY WARRANTY; without even the implied warranty of
-##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-##  GNU General Public License for more details.
-##
-##  You should have received a copy of the GNU General Public License
-##  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-##
-
+end);
