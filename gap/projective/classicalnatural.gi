@@ -1769,7 +1769,7 @@ RECOG.SLn_godownFirstStingray:=function(list)
          factors:=Factors(pol);
          degrees:=AsSortedList(List(factors,Degree));
          newdim:=first(degrees);
-      until (count>10) or (newdim <> fail and newdim<=Maximum(2,d/4) and (Size(degrees) = 1 or degrees[2]<>newdim));
+      until (count>10) or (newdim <> fail and (1 < newdim) and (newdim < 2 * Log2Int(d)) and (Size(degrees) = 1 or degrees[2]<>newdim));
 
       if count>10 then
          return fail;
@@ -1856,17 +1856,21 @@ RECOG.SLn_godownSecondStingray:=function(list,possiblePPDs,newdimsecondstingray)
          factors:=Factors(pol);
          degrees:=AsSortedList(List(factors,Degree));
          newdim:=first(degrees);
-      until (count>10) or (newdim <> fail and newdim<=Maximum(2,d/4) and (Size(degrees) = 1 or degrees[2]<>newdim));
+      until (count>10) or (newdim <> fail and (1 < newdim) and (newdim < 2 * Log2Int(d)) and (Size(degrees) = 1 or degrees[2]<>newdim));
 
       if count>10 then
          return fail;
       fi;
 
       # raise r to a power so that acting trivially outside one invariant subspace
+      # TODO: We do not need the next line anymore as newdim appears only one time in degrees
       degrees:=Filtered(degrees, x->x<>newdim);
       colldegrees:=Collected(degrees);
+      # TODO: Braucht man das q am Ende noch?
       power:=Lcm(List(degrees, x->q^x-1))*q;
+      # power:=Lcm(List(degrees, x->q^x-1));
       # power further to cancel q-part of element order
+      # TODO: Can the next line ever be true? newdim = first(degrees) and 1 < newdim
       if degrees[1]=1 then
          exp:=colldegrees[1][2]-(DimensionOfMatrixGroup(gg)-d);
          if exp>0 then
@@ -2164,6 +2168,7 @@ RECOG.SLn_constructppd2TwoStingrayVersion2:=function(g,dim,q)
      else
         if out[2]>2 then
            repeat
+                  Display("here2");
                 out2:=RECOG.SLn_godownSecondStingray(list,out[4],out[2]);
                 if out2=fail or out2[1]*out2[1]=One(out2[1]) then
                     if InfoLevel(InfoRecog) >= 3 then Print("B\c"); fi;
@@ -2210,6 +2215,8 @@ RECOG.CheckNewStingrayGroup := function(g1,dim1,base1,g2,dim2,base2,q)
 end;
 
 
+# Find random element s = r^PseudRandom(g) such that <r,s> is isomorphic to SL(4,q)
+# and check whether they are isomorphic
 RECOG.SLn_constructsl4:=function(g,dim,q,r)
   local s,h,count,readydim4,readydim3,ready,u,orderu,
         nullr,nulls,nullspacer,nullspaces,int,intbasis,nullintbasis,
@@ -2244,6 +2251,9 @@ RECOG.SLn_constructsl4:=function(g,dim,q,r)
     #shortr, shorts do not need memory
     #we shall throw away the computations in h
     #check that we have SL(4,q), by non-constructive recognition
+    
+    # Remark D.R.: Tries to reduce matrix multiplications
+    #               by working with 4 dimensional matrices
     shortr:=newr{[dim-3..dim]}{[dim-3..dim]};
     shorts:=news{[dim-3..dim]}{[dim-3..dim]};
     h:=Group(shortr,shorts);
@@ -2372,6 +2382,7 @@ RECOG.SLn_exceptionalgodown:=function(h,q,dim)
 end;
 
 
+
 RECOG.SLn_constructsl2:=function(g,d,q)
   local r,h;
 
@@ -2379,6 +2390,7 @@ RECOG.SLn_constructsl2:=function(g,d,q)
   #r:=RECOG.SLn_constructppd2TwoStingray(g,d,q);
   r:=RECOG.SLn_constructppd2TwoStingrayVersion2(g,d,q);
   h:=RECOG.SLn_constructsl4(g,d,q,r);
+  # Remark D.R.: at this point we know that h is isomorphic to SL(4,q)
   if not (q in [2,3,4,5,9]) then
      return RECOG.SLn_godownfromd(h,q,4,d);
   else
@@ -2386,6 +2398,8 @@ RECOG.SLn_constructsl2:=function(g,d,q)
   #   return ["sorry only SL(4,q)",h];
   fi;
 end;
+
+
 
 # Now the going up code:
 
@@ -3153,9 +3167,58 @@ end;;
 
 # Input: X where <X> is isomorphic to SL(4,q), F where X are dxd matrices over F_q = F (q = p^f prime power)
 RECOG.OneEvenSL4 := function(X,F)
-    local d;
+    local d, G, g, h, foundStrongInvoluation, order, gensCentraliser, EPlus;
+    
+    d := 4;
+    G := GroupByGenerators(X);
+    foundStrongInvoluation := false;
+    while not(foundStrongInvoluation) do
+        g := PseudoRandom(G);
+        order := Order(g);
+        if (order mod 2 = 0) then
+            h := g^(order/2);
+            EPlus := NullspaceMat(h-One(G));
+            if Size(EPlus) = 2 then
+                foundStrongInvoluation := true;
+            fi;
+        fi;
+    od;
+    
+    gensCentraliser := RECOG.InvolutionCentraliser(G,h,100);
+    # TODO: Compute generating set for OmegaX(E) (see paper from LGO)
+
+    #TODO: CONTINUE HERE
+
+end;;
 
 
+
+# Input: h an involuation in a BB group G, natural number N > 0
+RECOG.InvolutionCentraliser := function(G, h, N)
+    local C, i, g;
+
+    C := [1..N];
+    for i in [1..N] do
+        g := PseudoRandom(G);
+        C[i] := RECOG.ChFromg(h,g);
+    od;
+
+    return DuplicateFreeList(C);
+end;;
+
+
+# Input: h and g group elements of the same group. Returns an element as in Bray's Lemma
+RECOG.ChFromg := function(h,g)
+    local order, com;
+
+    com := h^(-1)*g^(-1)*h*g;
+    order := Order(com);
+    
+    if (order mod 2 = 0) then
+        return com^(order/2);
+    else
+        return com^((order+1)/2)*g^(-1);
+    fi;
 end;;
 
 
