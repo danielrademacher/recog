@@ -1653,7 +1653,7 @@ RECOG.SLn_godown:=function(list)
       fi;
       rr:=r^power;
       
-      # Check whether the stingray element is an ppd stingray element
+      # Check whether the stingray element is a ppd stingray element
       # TODO: Dont use recursion. Instead use a loop in this function.
       if newdim > 2 then
           check := RECOG.CheckStingrayElement(rr,newdim,q);
