@@ -1601,7 +1601,222 @@ RECOG.IsThisSL2Natural := function(gens,f)
   return false;
 end;
 
+
+##############################################################################
 # The going down method:
+##############################################################################
+
+###### Actual GoingDownVersion
+###### We try to avoid calculating the order of an element
+
+# TODO: Work on comments and documentation
+
+RECOG.CheckNewStingrayGroup := function(g1,dim1,base1,g2,dim2,base2,q)
+    local baseSum, b, action1, action2, fld, module;
+
+    baseSum := ShallowCopy(base1);
+    Append(baseSum,base2);
+    
+    if NullspaceMat(baseSum) <> [] then
+        return false;
+    fi;
+    
+    fld := GF(q);
+    b := Basis(VectorSpace(fld,baseSum),baseSum);
+    action1 := List(baseSum,v->Coefficients(b,g1*v));
+    action2 := List(baseSum,v->Coefficients(b,g2*v));
+    module := GModuleByMats( [action1,action2], fld );
+    if MTX.IsIrreducible(module) then
+        return true;
+    else
+        return false;
+    fi;
+end;
+
+
+
+# Check whether the Stingray element rr acts irreducibel on the
+# <newdim> invariant subspace.
+# Only works for newdim > 2  ?!?!?
+# Are there no ppd stingray elements if newdim = 2?
+RECOG.SmallCheckStingrayElement:=function(rr,newdim,q)
+    local fixbase, V, subspace, e, base, fld, r, module, b, action, n, factors, order, i, j, ppdcheck;
+    
+    fld := GF(q);
+    r := StripMemory(rr);
+    n := Size(r);
+    
+    if IsIdentityMat(r) then
+        return [false];
+    fi;
+    
+    fixbase := NullspaceMat(r-IdentityMat(n,fld));
+    
+    base := NullspaceMat(TransposedMat(fixbase));
+    
+    if Size(base) <> newdim then
+        #Error("This should not happen.");
+        Display("This should not happen.");
+        return [false];
+    fi;
+    
+    b := Basis(VectorSpace(fld,base),base);
+    action := List(base,v->Coefficients(b,r*v));
+    module := GModuleByMats( [action], fld );
+    if MTX.IsIrreducible(module) then
+        return [true,base];
+    else
+        return [false];
+    fi;
+
+end;
+
+
+
+# finds first element of a list that is relative prime to all others
+# input: list=[SL(d,q), d, q, SL(n,q)] acting as a subgroup of some big SL(n,q)
+# output: list=[rr, dd] for a ppd(2*dd;q)-element rr
+RECOG.SLn_godownStingrayFinalVersion:=function(list)
+  local d, first, q, g, gg, i, r, pol, factors, degrees, newdim, power, rr, ss,
+  newgroup, colldegrees, exp, count, check, ocount;
+
+  first := function(list)
+  local i;
+      for i in [1..Length(list)] do
+          if list[i]>1 and Gcd(list[i],Product(list)/list[i])=1 then
+             return list[i];
+          fi;
+      od;
+      return fail;
+  end;
+
+  g:=list[1];
+  d:=list[2];
+  q:=list[3];
+  gg:=list[4];
+
+  # Overall count. Replace by formula and unequality
+  ocount := 0;
+  while ocount < 100 do
+
+      Info(InfoRecog,2,"Dimension: ",d);
+      #find an element with irreducible action of relative prime dimension to
+      #all other invariant subspaces
+      #count is just safety, if things go very bad
+      count:=0;
+
+      repeat
+         count:=count+1;
+         if InfoLevel(InfoRecog) >= 3 then Print(".\c"); fi;
+         r:=PseudoRandom(g);
+         pol:=CharacteristicPolynomial(r);
+         factors:=Factors(pol);
+         degrees:=AsSortedList(List(factors,Degree));
+         newdim:=first(degrees);
+      until (count>10) or (newdim <> fail and (1 < newdim) and (newdim < 2*Log2Int(d)) and (Size(degrees) = 1 or degrees[2]<>newdim));
+
+      if count>20 then
+         return fail;
+      fi;
+
+      # raise r to a power so that acting trivially outside one invariant subspace
+      degrees:=Filtered(degrees, x->x<>newdim);
+      colldegrees:=Collected(degrees);
+      power:=Lcm(List(degrees, x->q^x-1))*q;
+      # power further to cancel q-part of element order
+      if degrees[1]=1 then
+         exp:=colldegrees[1][2]-(DimensionOfMatrixGroup(gg)-d);
+         if exp>0 then
+           power:=power*q^exp;
+         fi;
+      fi;
+      rr:=r^power;
+      
+      # Check whether the stingray candidate is a stingray element
+      check := RECOG.SmallCheckStingrayElement(rr,newdim,q);
+      if check[1] then
+          return [rr,newdim,check[2]];
+      fi;
+      
+      ocount := ocount + 1;
+  od;
+
+  #conjugate rr to hopefully get a smaller dimensional SL
+  #ss:=rr^PseudoRandom(gg);
+  #newgroup:=Group(rr,ss);
+
+  # return [rr,newdim];
+
+end;
+
+
+
+RECOG.SLn_constructppdTwoStingrayFinalVersion:=function(g,dim,q)
+  local out, list, out2, currentdim;
+
+  Print("Current Dimension: ");
+  Print(dim);
+  Print("\n");
+
+  list:=[g,dim,q,g];
+  currentdim := dim;
+  repeat
+     out:=RECOG.SLn_godownStingrayFinalVersion(list);
+     if out=fail or out[1]*out[1]=One(out[1]) then
+        if InfoLevel(InfoRecog) >= 3 then Print("B\c"); fi;
+        Print("Restart. \n");
+        Print("Current Dimension: ");
+        Print(dim);
+        Print("\n");
+        list:=[g,dim,q,g];
+        out:=fail;
+     else
+        if out[2]>2 then
+           repeat
+                out2:=RECOG.SLn_godownStingrayFinalVersion(list);
+                if out2=fail or out2[1]*out2[1]=One(out2[1]) then
+                    if InfoLevel(InfoRecog) >= 3 then Print("B\c"); fi;
+                    list:=[g,dim,q,g];
+                    out2:=fail;
+                fi;
+           until out2<>fail and out2[2] > 2;
+           if RECOG.CheckNewStingrayGroup(out[1],out[2],out[3],out2[1],out2[2],out2[3],q) then
+                list:=[Group(out[1],out2[1]),out[2]+out2[2],q,g];
+                currentdim := list[2];
+                
+                Print("Debugg Info:\n");
+                Print("Dimension FirstElement: ");
+                Print(out[2]);
+                Print("\n");
+                Print("Dimension SecondElement: ");
+                Print(out2[2]);
+                Print("\n");
+                Print("End Debugg Info. \n");
+                
+                Print("New Dimension: ");
+                Print(out[2]+out2[2]);
+                Print("\n");
+           else
+                if InfoLevel(InfoRecog) >= 3 then Print("B\c"); fi;
+                Print("Restart. \n");
+                Print("Current Dimension: ");
+                Print(dim);
+                Print("\n");
+                list:=[g,dim,q,g];
+                out:=fail;
+           fi;
+        fi;
+     fi;
+  until out<>fail and out[2]=2;
+
+  return out[1];
+
+end;
+
+
+
+###############
+
 
 #Version 1.2
 
@@ -2228,40 +2443,6 @@ end;
 
 
 
-
-# Check whether the Stingray element rr acts irreducibel on the
-# <newdim> invariant subspace.
-# Only works for newdim > 2  ?!?!?
-# Are there no ppd stingray elements if newdim = 2?
-RECOG.SmallCheckStingrayElement:=function(rr,newdim,q)
-    local fixbase, V, subspace, e, base, fld, r, module, b, action, n, factors, order, i, j, ppdcheck;
-    
-    fld := GF(q);
-    r := StripMemory(rr);
-    n := Size(r);
-    fixbase := NullspaceMat(r-IdentityMat(n,fld));
-    
-    base := NullspaceMat(TransposedMat(fixbase));
-    
-    if Size(base) <> newdim then
-        # Error("This should not happen.");
-        Display("This should not happen.");
-        return [false];
-    fi;
-    
-    b := Basis(VectorSpace(fld,base),base);
-    action := List(base,v->Coefficients(b,r*v));
-    module := GModuleByMats( [action], fld );
-    if MTX.IsIrreducible(module) then
-        return [true,base];
-    else
-        return [false];
-    fi;
-
-end;
-
-
-
 # input is (group,dimension,q)
 # output is a group element acting irreducibly in two dimensions, and fixing
 # a (dimension-2)-dimensional subspace
@@ -2483,29 +2664,6 @@ RECOG.SLn_constructppd2TwoStingrayVersion4:=function(g,dim,q)
 end;
 
 
-RECOG.CheckNewStingrayGroup := function(g1,dim1,base1,g2,dim2,base2,q)
-    local baseSum, b, action1, action2, fld, module;
-
-    baseSum := ShallowCopy(base1);
-    Append(baseSum,base2);
-    
-    if NullspaceMat(baseSum) <> [] then
-        return false;
-    fi;
-    
-    fld := GF(q);
-    b := Basis(VectorSpace(fld,baseSum),baseSum);
-    action1 := List(baseSum,v->Coefficients(b,g1*v));
-    action2 := List(baseSum,v->Coefficients(b,g2*v));
-    module := GModuleByMats( [action1,action2], fld );
-    if MTX.IsIrreducible(module) then
-        return true;
-    else
-        return false;
-    fi;
-end;
-
-
 # Find random element s = r^PseudRandom(g) such that <r,s> is isomorphic to SL(4,q)
 # and check whether they are isomorphic
 RECOG.SLn_constructsl4:=function(g,dim,q,r)
@@ -2681,10 +2839,15 @@ RECOG.SLn_constructsl2:=function(g,d,q)
 
   #r:=RECOG.SLn_constructppd2(g,d,q);
   #r:=RECOG.SLn_constructppd2TwoStingray(g,d,q);
-  r:=RECOG.SLn_constructppd2TwoStingrayVersion2(g,d,q);
-  h:=RECOG.SLn_constructsl4(g,d,q,r);
+  #r:=RECOG.SLn_constructppd2TwoStingrayVersion2(g,d,q);
+  r := RECOG.SLn_constructppdTwoStingrayFinalVersion(g,d,q);
+  Print("Finished main GoingDown, i.e. we found a stringray element which operates irreducible on a 2 dimensional subspace. \n");
+  Print("Next goal: Find an random element s.t. the two elements generate SL(4,q). \n");
+  h := RECOG.SLn_constructsl4(g,d,q,r);
   # Remark D.R.: at this point we know that h is isomorphic to SL(4,q)
+  Print("Succesful. ");
   Print("Current Dimension: 4\n");
+  Print("Next goal: Generate SL(2,q). \n");
   if not (q in [2,3,4,5,9]) then
      return RECOG.SLn_godownfromd(h,q,4,d);
   else
@@ -2910,19 +3073,75 @@ RECOG.SLn_UpStep := function(w)
           # Check how these elements look like. Where is the SLP and what elements do we really use
           
           # Now check that Vn + Vn*s^c1 has dimension 2n-1:
-          Vnc := VectorSpace(w.f,c{[1..w.n]});
-          sum1 := ClosureLeftModule(Vn,Vnc);
+          
+          #################
+          # Change by DR
+          # Avoid vector spaces
+          #################
+          
+          # Old
+          #Vnc := VectorSpace(w.f,c{[1..w.n]});
+          #sum1 := ClosureLeftModule(Vn,Vnc);
+          
+          # New
+          sum1 := SumIntersectionMat(c{[1..w.n]},id{[1..w.n]});
+          
+          #################
+          # Change by DR
+          # End of change
+          #################
+          
           #Print("-----\n");
           #Print("Dimensions: \n");
           #Display(Dimension(sum1));
           #Display(aimdim);
           #Print("-----\n");
-          if Dimension(sum1) = aimdim then
-                if aimdim =  9 then
-                    Error("here");
-                fi;
-              Fixc := VectorSpace(w.f,NullspaceMat(c-One(c)));
-              int1 := Intersection(Fixc,Vn);
+          
+          #################
+          # Change by DR
+          # Avoid vector spaces
+          #################
+          
+          # Old
+          #if Dimension(sum1) = aimdim then
+          
+          # New
+          if Size(sum1[1]) = aimdim then
+          
+          #################
+          # Change by DR
+          # End of change
+          #################
+          
+                #if aimdim =  9 then
+                #    Error("here");
+                #fi;
+              
+              #################
+              # Change by DR
+              # Avoid vector spaces
+              #################
+              
+              # Old
+              # Fixc := VectorSpace(w.f,NullspaceMat(c-One(c)));
+              # int1 := Intersection(Fixc,Vn);
+              
+              # New
+              int1 := VectorSpace(w.f,SumIntersectionMat(NullspaceMat(c-One(c)),id{[1..w.n]})[2]);
+              
+              #################
+              # Change by DR
+              # End of change
+              #################
+              
+              # WIP: here
+              # Display("Dimension vom Schnitt:");
+              # Display(Dimension(Intersection(Fixc,VectorSpace(w.f, w.bas{[((w.n)+1)..w.d]} ))));
+              # if Dimension(Intersection(Fixc,VectorSpace(w.f, w.bas{[((w.n)+1)..w.d]} ))) <> (w.n -1) then
+              #   Display("I would retry");
+              # fi;
+              # End WIP
+              
               for i in [1..Dimension(int1)] do
                   v := Basis(int1)[i];
                   if not(IsZero(v[w.n])) then break; fi;
@@ -2967,8 +3186,24 @@ RECOG.SLn_UpStep := function(w)
       newpart := newpart{pivots};
       newbas := Concatenation(id{[1..w.n-1]},[v],newpart);
       if 2*w.n-1 < w.d then
-          int3 := Intersection(FixSLn,Fixc);
-          # IS THE NEXT LINE CORRECT?
+          
+          #################
+          # Change by DR
+          # Avoid vector spaces
+          #################
+          
+          # Old
+          # int3 := Intersection(FixSLn,Fixc);
+          
+          # New
+          int3 := VectorSpace(w.f,SumIntersectionMat(NullspaceMat(c-One(c)),id{[w.n+1..w.d]})[2]);
+          
+          #################
+          # Change by DR
+          # End of change
+          #################
+          
+          # IS THE NEXT LINE CORRECT? - YES
           if Dimension(int3) <> w.d - aimdim then
               Info(InfoRecog,2,"Ooops, FixSLn \cap Fixc wrong dimension");
               Error("neues beispiel");
@@ -3008,9 +3243,9 @@ RECOG.SLn_UpStep := function(w)
           cii := cii{pivots2}^-1;
           ConvertToMatrixRep(cii,w.f);
           
-            if aimdim = 9 then
-            Error("check c elements");
-          fi;
+          #if aimdim = 9 then
+          #  Error("check c elements");
+          #fi;
           
           c := newbas * c * newbasi;
           w.bas := newbas * w.bas;
@@ -3111,17 +3346,17 @@ RECOG.SLn_UpStep := function(w)
               fi;
           od;
       od;
-        #if aimdim = 5 then
-        #    Error("here");
-        #  fi;
+        
       # Now cleanup column n above row n:
       for j in [1..w.n-1] do
           tf := DoColOp_n(tf,j,w.n,ci[j,w.n],w);
       od;
+      
       # Now cleanup row n left of column n:
       for j in [1..w.n-1] do
           tf := DoRowOp_n(tf,w.n,j,-c[i,j],w);
       od;
+      
       # Now cleanup column n below row n:
       for j in [1..newdim] do
           coeffs := IntVecFFE(Coefficients(w.can,ci[w.n+j,w.n]));
