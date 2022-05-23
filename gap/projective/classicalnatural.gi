@@ -1751,6 +1751,392 @@ end;
 
 
 
+# finds first element of a list that is relative prime to all others
+# input: list=[SL(d,q), d, q, SL(n,q)] acting as a subgroup of some big SL(n,q)
+# output: list=[rr, dd] for a ppd(2*dd;q)-element rr
+RECOG.SLn_godownStingrayFinalVersion2:=function(list)
+  local d, first, q, p, g, gg, i, r, pol, factors, degrees, newdim, power, rr, ss,
+  newgroup, colldegrees, exp, count, check, ocount, beta, NiList, Maxi;
+
+  first := function(list)
+    local i, j, goodElement;
+        for i in [1..Length(list)] do
+            if list[i]>1 then
+                if Gcd(list[i],Product(list)/list[i]) < list[i] then
+                    return list[i];
+                else
+                    goodElement := true;
+                    for j in [1..Length(list)] do
+                        if not(j = i) and Gcd(list[i],list[j]) = list[i] then
+                            goodElement := false;
+                            break;
+                        fi;
+                    od;
+                    if goodElement then
+                        return list[i];
+                    fi;
+                fi;
+            fi;
+        od;
+        return fail;
+    end;
+
+  g:=list[1];
+  d:=list[2];
+  q:=list[3];
+  p := Factors(q)[1];
+  gg:=list[4];
+
+  # Overall count. Replace by formula and unequality
+  ocount := 0;
+  while ocount < 100 do
+
+      Info(InfoRecog,2,"Dimension: ",d);
+      #find an element with irreducible action of relative prime dimension to
+      #all other invariant subspaces
+      #count is just safety, if things go very bad
+      count:=0;
+
+      repeat
+         count:=count+1;
+         if InfoLevel(InfoRecog) >= 3 then Print(".\c"); fi;
+         r:=PseudoRandom(g);
+         pol:=CharacteristicPolynomial(r);
+         factors:=Factors(pol);
+         degrees:=AsSortedList(List(factors,Degree));
+         newdim:=first(degrees);
+      until (count>10) or (newdim <> fail and (newdim < 2*Log2Int(d)));
+
+      if count>20 then
+         return fail;
+      fi;
+
+      # raise r to a power so that acting trivially outside one invariant subspace
+      NiList := Collected(degrees);
+      NiList := Filtered(NiList,x->not(x[1] = newdim));
+      colldegrees := List(NiList,x->x[1]);
+      NiList := List(NiList,x->x[2]);
+      Maxi := Maximum(NiList);
+      beta := LogInt(Maxi,p);
+      if not(p^beta = Maxi) then
+          beta := beta + 1;
+      fi;
+      
+      # power further to cancel q-part of element order
+      power := p^beta;
+      for exp in colldegrees do
+        power := power * (q^exp - 1);
+      od;
+      rr:=r^power;
+      
+      # Check whether the stingray candidate is a stingray element
+      check := RECOG.SmallCheckStingrayElement(rr,newdim,q);
+      if check[1] then
+          return [rr,newdim,check[2]];
+      fi;
+      
+      ocount := ocount + 1;
+  od;
+
+  #conjugate rr to hopefully get a smaller dimensional SL
+  #ss:=rr^PseudoRandom(gg);
+  #newgroup:=Group(rr,ss);
+
+  # return [rr,newdim];
+
+end;
+
+
+# finds first element of a list that is relative prime to all others
+# input: list=[SL(d,q), d, q, SL(n,q)] acting as a subgroup of some big SL(n,q)
+# output: list=[rr, dd] for a ppd(2*dd;q)-element rr
+RECOG.SLn_godownStingrayFinalVersion4:=function(list)
+  local d, first, q, p, g, gg, i, r, pol, factors, degrees, newdim, power, rr, ss,
+  newgroup, colldegrees, exp, count, check, ocount, beta, NiList, Maxi;
+
+  first := function(list)
+    local i, j, goodElement;
+        for i in [1..Length(list)] do
+            if list[i]>1 then
+                if Gcd(list[i],Product(list)/list[i]) < list[i] then
+                    return list[i];
+                else
+                    goodElement := true;
+                    for j in [1..Length(list)] do
+                        if not(j = i) and Gcd(list[i],list[j]) = list[i] then
+                            goodElement := false;
+                            break;
+                        fi;
+                    od;
+                    if goodElement then
+                        return list[i];
+                    fi;
+                fi;
+            fi;
+        od;
+        return fail;
+    end;
+
+  g:=list[1];
+  d:=list[2];
+  q:=list[3];
+  p := Factors(q)[1];
+  gg:=list[4];
+
+  # Overall count. Replace by formula and unequality
+  ocount := 0;
+  while ocount < 100 do
+
+      Info(InfoRecog,2,"Dimension: ",d);
+      #find an element with irreducible action of relative prime dimension to
+      #all other invariant subspaces
+      #count is just safety, if things go very bad
+      count:=0;
+
+      repeat
+         count:=count+1;
+         if InfoLevel(InfoRecog) >= 3 then Print(".\c"); fi;
+         r:=PseudoRandom(g);
+         pol:=CharacteristicPolynomial(r);
+         factors:=Factors(pol);
+         degrees:=AsSortedList(List(factors,Degree));
+         newdim:=first(degrees);
+      until (count>10) or (newdim <> fail and (newdim < Log2Int(d)));
+
+      if count>20 then
+         return fail;
+      fi;
+
+      # raise r to a power so that acting trivially outside one invariant subspace
+      NiList := Collected(degrees);
+      NiList := Filtered(NiList,x->not(x[1] = newdim));
+      colldegrees := List(NiList,x->x[1]);
+      NiList := List(NiList,x->x[2]);
+      Maxi := Maximum(NiList);
+      beta := LogInt(Maxi,p);
+      if not(p^beta = Maxi) then
+          beta := beta + 1;
+      fi;
+      
+      # power further to cancel q-part of element order
+      power := p^beta;
+      for exp in colldegrees do
+        power := power * (q^exp - 1);
+      od;
+      rr:=r^power;
+      
+      # Check whether the stingray candidate is a stingray element
+      check := RECOG.SmallCheckStingrayElement(rr,newdim,q);
+      if check[1] then
+          return [rr,newdim,check[2]];
+      fi;
+      
+      ocount := ocount + 1;
+  od;
+
+  #conjugate rr to hopefully get a smaller dimensional SL
+  #ss:=rr^PseudoRandom(gg);
+  #newgroup:=Group(rr,ss);
+
+  # return [rr,newdim];
+
+end;
+
+
+
+# finds first element of a list that is relative prime to all others
+# input: list=[SL(d,q), d, q, SL(n,q)] acting as a subgroup of some big SL(n,q)
+# output: list=[rr, dd] for a ppd(2*dd;q)-element rr
+RECOG.SLn_godownStingrayFinalVersion5:=function(list)
+  local d, first, q, p, g, gg, i, r, pol, factors, degrees, newdim, power, rr, ss,
+  newgroup, colldegrees, exp, count, check, ocount, beta, NiList, Maxi;
+
+  first := function(list)
+    local i, j, goodElement;
+        for i in [1..Length(list)] do
+            if list[i]>1 then
+                if Gcd(list[i],Product(list)/list[i]) < list[i] then
+                    return list[i];
+                else
+                    goodElement := true;
+                    for j in [1..Length(list)] do
+                        if not(j = i) and Gcd(list[i],list[j]) = list[i] then
+                            goodElement := false;
+                            break;
+                        fi;
+                    od;
+                    if goodElement then
+                        return list[i];
+                    fi;
+                fi;
+            fi;
+        od;
+        return fail;
+    end;
+
+  g:=list[1];
+  d:=list[2];
+  q:=list[3];
+  p := Factors(q)[1];
+  gg:=list[4];
+
+  # Overall count. Replace by formula and unequality
+  ocount := 0;
+  while ocount < 100 do
+
+      Info(InfoRecog,2,"Dimension: ",d);
+      #find an element with irreducible action of relative prime dimension to
+      #all other invariant subspaces
+      #count is just safety, if things go very bad
+      count:=0;
+
+      repeat
+         count:=count+1;
+         if InfoLevel(InfoRecog) >= 3 then Print(".\c"); fi;
+         r:=PseudoRandom(g);
+         pol:=CharacteristicPolynomial(r);
+         factors:=Factors(pol);
+         degrees:=AsSortedList(List(factors,Degree));
+         newdim:=first(degrees);
+      until (count>10) or (newdim <> fail and (newdim < Log2Int(d)));
+
+      if count>20 then
+         return fail;
+      fi;
+
+      # raise r to a power so that acting trivially outside one invariant subspace
+      NiList := Collected(degrees);
+      NiList := Filtered(NiList,x->not(x[1] = newdim));
+      colldegrees := List(NiList,x->x[1]);
+      NiList := List(NiList,x->x[2]);
+      Maxi := Maximum(NiList);
+      beta := LogInt(Maxi,p);
+      if not(p^beta = Maxi) then
+          beta := beta + 1;
+      fi;
+      
+      # power further to cancel q-part of element order
+      power := Lcm(List(colldegrees, x->q^x-1))*p^beta;
+      #for exp in colldegrees do
+      #  power := power * (q^exp - 1);
+      #od;
+      rr:=r^power;
+      
+      # Check whether the stingray candidate is a stingray element
+      check := RECOG.SmallCheckStingrayElement(rr,newdim,q);
+      if check[1] then
+          return [rr,newdim,check[2]];
+      fi;
+      
+      ocount := ocount + 1;
+  od;
+
+  #conjugate rr to hopefully get a smaller dimensional SL
+  #ss:=rr^PseudoRandom(gg);
+  #newgroup:=Group(rr,ss);
+
+  # return [rr,newdim];
+
+end;
+
+
+# finds first element of a list that is relative prime to all others
+# input: list=[SL(d,q), d, q, SL(n,q)] acting as a subgroup of some big SL(n,q)
+# output: list=[rr, dd] for a ppd(2*dd;q)-element rr
+RECOG.SLn_godownStingrayFinalVersion3:=function(list)
+  local d, first, q, p, g, gg, i, r, pol, factors, degrees, newdim, power, rr, ss,
+  newgroup, colldegrees, exp, count, check, ocount, beta, NiList, Maxi;
+
+  first := function(list)
+    local i, j, goodElement;
+        for i in [1..Length(list)] do
+            if list[i]>1 then
+                if Gcd(list[i],Product(list)/list[i]) < list[i] then
+                    return list[i];
+                else
+                    goodElement := true;
+                    for j in [1..Length(list)] do
+                        if not(j = i) and Gcd(list[i],list[j]) = list[i] then
+                            goodElement := false;
+                            break;
+                        fi;
+                    od;
+                    if goodElement then
+                        return list[i];
+                    fi;
+                fi;
+            fi;
+        od;
+        return fail;
+    end;
+
+  g:=list[1];
+  d:=list[2];
+  q:=list[3];
+  p := Factors(q)[1];
+  gg:=list[4];
+
+  # Overall count. Replace by formula and unequality
+  ocount := 0;
+  while ocount < 100 do
+
+      Info(InfoRecog,2,"Dimension: ",d);
+      #find an element with irreducible action of relative prime dimension to
+      #all other invariant subspaces
+      #count is just safety, if things go very bad
+      count:=0;
+
+      repeat
+         count:=count+1;
+         if InfoLevel(InfoRecog) >= 3 then Print(".\c"); fi;
+         r:=PseudoRandom(g);
+         pol:=CharacteristicPolynomial(r);
+         factors:=Factors(pol);
+         degrees:=AsSortedList(List(factors,Degree));
+         newdim:=first(degrees);
+      until (count>10) or (newdim <> fail and (newdim < 2*Log2Int(d)));
+
+      if count>20 then
+         return fail;
+      fi;
+
+      # raise r to a power so that acting trivially outside one invariant subspace
+      NiList := Collected(degrees);
+      NiList := Filtered(NiList,x->not(x[1] = newdim));
+      colldegrees := List(NiList,x->x[1]);
+      NiList := List(NiList,x->x[2]);
+      Maxi := Maximum(NiList);
+      beta := LogInt(Maxi,p);
+      if not(p^beta = Maxi) then
+          beta := beta + 1;
+      fi;
+      
+      # power further to cancel q-part of element order
+      power := Lcm(List(colldegrees, x->q^x-1))*p^beta;
+      #for exp in colldegrees do
+      #  power := power * (q^exp - 1);
+      #od;
+      rr:=r^power;
+      
+      # Check whether the stingray candidate is a stingray element
+      check := RECOG.SmallCheckStingrayElement(rr,newdim,q);
+      if check[1] then
+          return [rr,newdim,check[2]];
+      fi;
+      
+      ocount := ocount + 1;
+  od;
+
+  #conjugate rr to hopefully get a smaller dimensional SL
+  #ss:=rr^PseudoRandom(gg);
+  #newgroup:=Group(rr,ss);
+
+  # return [rr,newdim];
+
+end;
+
+
+
 RECOG.SLn_constructppdTwoStingrayFinalVersion:=function(g,dim,q)
   local out, list, out2, currentdim;
 
@@ -1761,7 +2147,7 @@ RECOG.SLn_constructppdTwoStingrayFinalVersion:=function(g,dim,q)
   list:=[g,dim,q,g];
   currentdim := dim;
   repeat
-     out:=RECOG.SLn_godownStingrayFinalVersion(list);
+     out:=RECOG.SLn_godownStingrayFinalVersion5(list);
      if out=fail or out[1]*out[1]=One(out[1]) then
         if InfoLevel(InfoRecog) >= 3 then Print("B\c"); fi;
         Print("Restart. \n");
@@ -1773,7 +2159,7 @@ RECOG.SLn_constructppdTwoStingrayFinalVersion:=function(g,dim,q)
      else
         if out[2]>2 then
            repeat
-                out2:=RECOG.SLn_godownStingrayFinalVersion(list);
+                out2:=RECOG.SLn_godownStingrayFinalVersion5(list);
                 if out2=fail or out2[1]*out2[1]=One(out2[1]) then
                     if InfoLevel(InfoRecog) >= 3 then Print("B\c"); fi;
                     list:=[g,dim,q,g];
