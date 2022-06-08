@@ -1668,8 +1668,8 @@ end;
 # <newdim> invariant subspace.
 # Only works for newdim > 2  ?!?!?
 # Are there no ppd stingray elements if newdim = 2?
-RECOG.SmallCheckStingrayElement:=function(rr,newdim,q)
-    local fixbase, V, subspace, e, base, fld, r, module, b, action, n, factors, order, i, j, ppdcheck;
+RECOG.SmallCheckStingrayElement:=function(rr,newdim,q,form)
+    local fixbase, V, subspace, e, base, fld, r, module, b, action, n, factors, order, i, j, ppdcheck, restricted;
     
     fld := GF(q);
     r := StripMemory(rr);
@@ -1690,6 +1690,15 @@ RECOG.SmallCheckStingrayElement:=function(rr,newdim,q)
     fi;
     
     b := Basis(VectorSpace(fld,base),base);
+    restricted := IdentityMat(newdim,fld);
+    for i in [1..newdim] do
+        for j in [1..newdim] do
+            restricted[i,j] := b[i]*form*b[j];
+        od;
+    od;
+    if not(IsEmpty(NullspaceMat(restricted))) then
+        return [false];
+    fi;
     action := List(base,v->Coefficients(b,r*v));
     module := GModuleByMats( [action], fld );
     if MTX.IsIrreducible(module) then
@@ -5294,7 +5303,7 @@ RECOG.FindStdGens_Sp := function(sld,IsoDim)
   # that the Sp(d,q) standard generators with respect to this basis are
   # expressed by the slp in terms of the original generators of sld.
   local V,b,bas,basi,basit,d,data,ext,fakegens,id,nu,nu2,p,q,resl2,sl2,sl2gens,
-        sl2gensf,sl2genss,sl2stdf,slp,slpsl2std,slptosl2,st,std,stdgens,i,ex,f;
+        sl2gensf,sl2genss,sl2stdf,slp,slpsl2std,slptosl2,st,std,stdgens,i,ex,f,form;
 
   # Some setup:
   f := FieldOfMatrixGroup(sld);
@@ -5302,6 +5311,7 @@ RECOG.FindStdGens_Sp := function(sld,IsoDim)
   q := Size(f);
   ext := DegreeOverPrimeField(f);
   d := DimensionOfMatrixGroup(sld);
+  form := RECOG.SymplecticForm(sld);
   if not(IsObjWithMemory(GeneratorsOfGroup(sld)[1])) then
       sld := GroupWithMemory(sld);
   fi;
@@ -5310,7 +5320,7 @@ RECOG.FindStdGens_Sp := function(sld,IsoDim)
   Info(InfoRecog,2,"Finding an Sp2...");
   Display("-----");
   Display("Start of the GoingDown Algorithm.");
-  data := RECOG.Spn_constructsp2(sld,d,q);
+  data := RECOG.Spn_constructsp2(sld,d,q,form);
   Display("The GoingDown Algorithm was successful.");
   Display("-----");
 
@@ -5389,17 +5399,17 @@ end;
 
 
 
-RECOG.Spn_constructsp2:=function(g,d,q)
+RECOG.Spn_constructsp2:=function(g,d,q,form)
   local r,h;
 
   #r:=RECOG.SLn_constructppd2(g,d,q);
   #r:=RECOG.SLn_constructppd2TwoStingray(g,d,q);
   #r:=RECOG.SLn_constructppd2TwoStingrayVersion2(g,d,q);
-  r := RECOG.Spn_constructppdTwoStingray(g,d,q);
+  r := RECOG.Spn_constructppdTwoStingray(g,d,q,form);
   Print("Finished main GoingDown, i.e. we found a stringray element which operates irreducible on a 2 dimensional subspace. \n");
-  Print("Next goal: Find an random element s.t. the two elements generate SL(4,q). \n");
+  Print("Next goal: Find an random element s.t. the two elements generate Sp(4,q). \n");
   Error("here");
-  # Remark D.R.: at this point we know that h is isomorphic to SL(4,q)
+  # Remark D.R.: at this point we know that h is isomorphic to Sp(4,q)
   Print("Succesful. ");
   Print("Current Dimension: 4\n");
   Print("Next goal: Generate SL(2,q). \n");
@@ -5531,7 +5541,7 @@ end;
 # output: list=[rr, dd] for a ppd(2*dd;q)-element rr
 RECOG.Spn_godownStingray:=function(list)
   local d, CheckFactors, CheckOtherFactors, q, p, g, gg, i, r, pol, factors, degrees, newdim, power, rr, ss,
-  newgroup, colldegrees, exp, count, check, ocount, beta, NiList, Maxi;
+  newgroup, colldegrees, exp, count, check, ocount, beta, NiList, Maxi, form;
  
   CheckOtherFactors := function(i, deg, fact)
   local j;
@@ -5566,6 +5576,7 @@ RECOG.Spn_godownStingray:=function(list)
   q:=list[3];
   p := Factors(q)[1];
   gg:=list[4];
+  form := list[5];
 
   # Overall count. Replace by formula and unequality
   ocount := 0;
@@ -5610,7 +5621,7 @@ RECOG.Spn_godownStingray:=function(list)
       rr:=r^power;
       
       # Check whether the stingray candidate is a stingray element
-      check := RECOG.SmallCheckStingrayElement(rr,newdim,q);
+      check := RECOG.SmallCheckStingrayElement(rr,newdim,q,form);
       if check[1] then
           #if not(RECOG.CheckPPDdqe(r,d,q,newdim)) then
           #  Error("Here");
@@ -5631,14 +5642,14 @@ end;
 
 
 
-RECOG.Spn_constructppdTwoStingray:=function(g,dim,q)
+RECOG.Spn_constructppdTwoStingray:=function(g,dim,q,form)
   local out, list, out2, currentdim;
 
   Print("Current Dimension: ");
   Print(dim);
   Print("\n");
 
-  list:=[g,dim,q,g];
+  list:=[g,dim,q,g,form];
   currentdim := dim;
   repeat
      out:=RECOG.Spn_godownStingray(list);
@@ -5648,7 +5659,7 @@ RECOG.Spn_constructppdTwoStingray:=function(g,dim,q)
         Print("Current Dimension: ");
         Print(dim);
         Print("\n");
-        list:=[g,dim,q,g];
+        list:=[g,dim,q,g,form];
         out:=fail;
      else
         if out[2]>=2 then
@@ -5656,12 +5667,12 @@ RECOG.Spn_constructppdTwoStingray:=function(g,dim,q)
                 out2:=RECOG.Spn_godownStingray(list);
                 if out2=fail or out2[1]*out2[1]=One(out2[1]) then
                     if InfoLevel(InfoRecog) >= 3 then Print("B\c"); fi;
-                    list:=[g,dim,q,g];
+                    list:=[g,dim,q,g,form];
                     out2:=fail;
                 fi;
            until out2<>fail and out2[2] >= 2;
            if RECOG.CheckNewStingrayGroupSp(out[1],out[2],out[3],out2[1],out2[2],out2[3],q) then
-                list:=[Group(out[1],out2[1]),out[2]+out2[2],q,g];
+                list:=[Group(out[1],out2[1]),out[2]+out2[2],q,g,form];
                 currentdim := list[2];
                 
                 Print("Debugg Info:\n");
@@ -5682,7 +5693,7 @@ RECOG.Spn_constructppdTwoStingray:=function(g,dim,q)
                 Print("Current Dimension: ");
                 Print(dim);
                 Print("\n");
-                list:=[g,dim,q,g];
+                list:=[g,dim,q,g,form];
                 out:=fail;
            fi;
         fi;
@@ -5921,3 +5932,41 @@ end;
 ##############################################################################
 ##############################################################################
 ##############################################################################
+
+
+##############################################################################
+# Linear action representation
+##############################################################################
+
+RECOG.LinearActionRepresentation := function(G)
+local OldGens, newGens, i, base, fld, d, EleBase, fixbase, B, action, ele, V;
+    
+    OldGens := ShallowCopy(GeneratorsOfGroup(G));
+    for i in [1..Length(OldGens)] do
+        if IsObjWithMemory(OldGens[i]) then
+            OldGens[i] := StripMemory(OldGens[i]);
+        fi;
+    od;
+    
+    fld := FieldOfMatrixList(OldGens);
+    d := Size(OldGens[1]);
+    base := [];
+    for i in [1..Length(OldGens)] do
+        ele := OldGens[i];
+        fixbase := NullspaceMat(ele-IdentityMat(d,fld));
+        EleBase := NullspaceMat(TransposedMat(fixbase));
+        Append(base,EleBase);
+    od;
+    
+    V := VectorSpace(fld,base);
+    B := Basis(V);
+    base := List(B,x->x);
+    newGens := [];
+    for i in [1..Length(OldGens)] do
+        ele := OldGens[i];
+        action := List(base,v->Coefficients(B,ele*v));
+        Add(newGens,action);
+    od;
+    
+    return GroupByGenerators(newGens);
+end;
