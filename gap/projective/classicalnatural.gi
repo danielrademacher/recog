@@ -1668,8 +1668,8 @@ end;
 # <newdim> invariant subspace.
 # Only works for newdim > 2  ?!?!?
 # Are there no ppd stingray elements if newdim = 2?
-RECOG.SmallCheckStingrayElement:=function(rr,newdim,q,form)
-    local fixbase, V, subspace, e, base, fld, r, module, b, action, n, factors, order, i, j, ppdcheck, restricted;
+RECOG.SmallCheckStingrayElement:=function(rr,newdim,q)
+    local fixbase, V, subspace, e, base, fld, r, module, b, action, n, factors, order, i, j, ppdcheck;
     
     fld := GF(q);
     r := StripMemory(rr);
@@ -1690,15 +1690,6 @@ RECOG.SmallCheckStingrayElement:=function(rr,newdim,q,form)
     fi;
     
     b := Basis(VectorSpace(fld,base),base);
-    restricted := IdentityMat(newdim,fld);
-    for i in [1..newdim] do
-        for j in [1..newdim] do
-            restricted[i,j] := b[i]*form*b[j];
-        od;
-    od;
-    if not(IsEmpty(NullspaceMat(restricted))) then
-        return [false];
-    fi;
     action := List(base,v->Coefficients(b,r*v));
     module := GModuleByMats( [action], fld );
     if MTX.IsIrreducible(module) then
@@ -1771,7 +1762,7 @@ RECOG.SLn_godownStingrayFinalVersion:=function(list)
       rr:=r^power;
       
       # Check whether the stingray candidate is a stingray element
-      check := RECOG.SmallCheckStingrayElement(rr,newdim,q);
+      check := RECOG.SmallCheckStingrayElementSp(rr,newdim,q);
       if check[1] then
           return [rr,newdim,check[2]];
       fi;
@@ -2172,7 +2163,7 @@ RECOG.SLn_godownStingrayFinalVersion6:=function(list)
           #od;
           rr:=r^power;
     
-          invbase := NullspaceMat(TransposedMat(NullspaceMat(StripMemory(rr)-IdentityMat(d,GF(q)))));
+          invbase := NullspaceMat(TransposedMat(NullspaceMat(StripMemory(rr)-IdentityMat(Size(rr),GF(q)))));
           
           return [rr,newdim,invbase];
           
@@ -2186,6 +2177,8 @@ RECOG.SLn_godownStingrayFinalVersion6:=function(list)
   #newgroup:=Group(rr,ss);
 
   # return [rr,newdim];
+  
+  return fail;
 
 end;
 
@@ -5428,7 +5421,7 @@ end;
 ##############################################################################
 
 ##############################################################################
-# The going down method for Sp:
+# The GoingDown method for Sp:
 ##############################################################################
 
 # TODO: Work on comments and documentation
@@ -5502,8 +5495,8 @@ end;
 # <newdim> invariant subspace.
 # Only works for newdim > 2  ?!?!?
 # Are there no ppd stingray elements if newdim = 2?
-RECOG.SmallCheckStingrayElementSp := function(rr,newdim,q)
-    local fixbase, V, subspace, e, base, fld, r, module, b, action, n, factors, order, i, j, ppdcheck;
+RECOG.SmallCheckStingrayElementSp := function(rr,newdim,q,form)
+    local fixbase, V, subspace, e, base, fld, r, module, b, action, n, factors, order, i, j, ppdcheck, restricted;
     
     fld := GF(q);
     r := StripMemory(rr);
@@ -5524,6 +5517,16 @@ RECOG.SmallCheckStingrayElementSp := function(rr,newdim,q)
     fi;
     
     b := Basis(VectorSpace(fld,base),base);
+    restricted := IdentityMat(newdim,fld);
+    for i in [1..newdim] do
+        for j in [1..newdim] do
+            restricted[i,j] := b[i]*form*b[j];
+        od;
+    od;
+    if not(IsEmpty(NullspaceMat(restricted))) then
+        Print("degenerate");
+        return [false];
+    fi;
     action := List(base,v->Coefficients(b,r*v));
     module := GModuleByMats( [action], fld );
     if MTX.IsIrreducible(module) then
@@ -5539,7 +5542,7 @@ end;
 # finds first element of a list that is relative prime to all others
 # input: list=[SL(d,q), d, q, SL(n,q)] acting as a subgroup of some big SL(n,q)
 # output: list=[rr, dd] for a ppd(2*dd;q)-element rr
-RECOG.Spn_godownStingray:=function(list)
+RECOG.Spn_godownStingrayVersion1:=function(list)
   local d, CheckFactors, CheckOtherFactors, q, p, g, gg, i, r, pol, factors, degrees, newdim, power, rr, ss,
   newgroup, colldegrees, exp, count, check, ocount, beta, NiList, Maxi, form;
  
@@ -5621,7 +5624,7 @@ RECOG.Spn_godownStingray:=function(list)
       rr:=r^power;
       
       # Check whether the stingray candidate is a stingray element
-      check := RECOG.SmallCheckStingrayElement(rr,newdim,q,form);
+      check := RECOG.SmallCheckStingrayElementSp(rr,newdim,q,form);
       if check[1] then
           #if not(RECOG.CheckPPDdqe(r,d,q,newdim)) then
           #  Error("Here");
@@ -5641,6 +5644,131 @@ RECOG.Spn_godownStingray:=function(list)
 end;
 
 
+# finds first element of a list that is relative prime to all others
+# input: list=[SL(d,q), d, q, SL(n,q)] acting as a subgroup of some big SL(n,q)
+# output: list=[rr, dd] for a ppd(2*dd;q)-element rr
+RECOG.Spn_godownStingrayVersion2:=function(list)
+  local d, first, q, p, g, gg, i, r, pol, factors, degrees, newdim, power, rr, ss,
+  newgroup, colldegrees, exp, count, check, ocount, beta, NiList, Maxi, qFactors, irrfact, invbase, form, CheckOtherFactors, CheckFactors, fld, restricted, b, j;
+
+  CheckOtherFactors := function(i, deg, fact)
+  local j;
+    for j in [1..Length(deg)] do
+        if not(j = i) then
+            if RECOG.CheckPolynomialForSelfConjugate(fact[j]) then
+                if (deg[j] mod deg[i] = 0) then
+                    return false;
+                fi;
+            else
+                if (deg[j] mod Int(deg[i]/2) = 0) then
+                    return false;
+                fi;
+            fi;
+        fi;
+    od;
+    return true;
+  end;
+
+  CheckFactors := function(deg, fact)
+  local i;
+      for i in [1..Length(deg)] do
+          if ((deg[i] mod 2) = 0) and RECOG.CheckPolynomialForSelfConjugate(fact[i]) and CheckOtherFactors(i,deg,fact) then
+            return i;
+          fi;
+      od;
+      return fail;
+  end;
+
+  g:=list[1];
+  d:=list[2];
+  q:=list[3];
+  qFactors:=Factors(q);
+  p := Factors(q)[1];
+  gg:=list[4];
+  form := list[5];
+  fld := GF(q);
+
+  # Overall count. Replace by formula and unequality
+  ocount := 0;
+  while ocount < 100 do
+
+      Info(InfoRecog,2,"Dimension: ",d);
+      #find an element with irreducible action of relative prime dimension to
+      #all other invariant subspaces
+      #count is just safety, if things go very bad
+      count:=0;
+
+      repeat
+         count:=count+1;
+         if InfoLevel(InfoRecog) >= 3 then Print(".\c"); fi;
+         r:=PseudoRandom(g);
+         pol:=CharacteristicPolynomial(r);
+         factors:=Factors(pol);
+         degrees:=List(factors,Degree);
+         newdim := CheckFactors(degrees, factors);
+      until (count>200) or (newdim <> fail and (degrees[newdim] < Maximum([2*Log2Int(d),3])));
+      # Be careful if Log2Int(d) = 2! In this case we search for stingray elements with k < 2. Hence use newdim < Maximum([Log2Int(d),3])
+
+      if count>200 then
+         return fail;
+      fi;
+      
+      # Split result from first:
+      irrfact := factors[newdim];
+      newdim := degrees[newdim];
+
+      # Check whether the stingray candidate is a ppd-stingray element
+      check := RECOG.IsPpdStingrayElement(p,Length(qFactors),newdim,irrfact);
+      if check then
+      
+          # raise r to a power so that acting trivially outside one invariant irreducible subspace
+          NiList := Collected(degrees);
+          NiList := Filtered(NiList,x->not(x[1] = newdim));
+          colldegrees := List(NiList,x->x[1]);
+          NiList := List(NiList,x->x[2]);
+          Maxi := Maximum(NiList);
+          beta := LogInt(Maxi,p);
+          if not(p^beta = Maxi) then
+              beta := beta + 1;
+          fi;
+          
+          # power further to cancel q-part of element order
+          power := Lcm(List(colldegrees, x->q^x-1))*p^beta;
+          #for exp in colldegrees do
+          #  power := power * (q^exp - 1);
+          #od;
+          rr:=r^power;
+    
+          invbase := NullspaceMat(TransposedMat(NullspaceMat(StripMemory(rr)-IdentityMat(Size(rr),GF(q)))));
+          
+          b := Basis(VectorSpace(fld,invbase),invbase);
+          restricted := IdentityMat(newdim,fld);
+          for i in [1..newdim] do
+              for j in [1..newdim] do
+                  restricted[i,j] := b[i]*form*b[j];
+              od;
+          od;
+          
+          if IsEmpty(NullspaceMat(restricted)) then
+              return [rr,newdim,invbase];
+          fi;
+          
+      fi;
+      
+      ocount := ocount + 1;
+  od;
+
+  #conjugate rr to hopefully get a smaller dimensional SL
+  #ss:=rr^PseudoRandom(gg);
+  #newgroup:=Group(rr,ss);
+
+  # return [rr,newdim];
+  
+  return fail;
+
+end;
+
+
 
 RECOG.Spn_constructppdTwoStingray:=function(g,dim,q,form)
   local out, list, out2, currentdim;
@@ -5652,7 +5780,7 @@ RECOG.Spn_constructppdTwoStingray:=function(g,dim,q,form)
   list:=[g,dim,q,g,form];
   currentdim := dim;
   repeat
-     out:=RECOG.Spn_godownStingray(list);
+     out:=RECOG.Spn_godownStingrayVersion2(list);
      if out=fail or out[1]*out[1]=One(out[1]) then
         if InfoLevel(InfoRecog) >= 3 then Print("B\c"); fi;
         Print("Restart. \n");
@@ -5664,7 +5792,7 @@ RECOG.Spn_constructppdTwoStingray:=function(g,dim,q,form)
      else
         if out[2]>=2 then
            repeat
-                out2:=RECOG.Spn_godownStingray(list);
+                out2:=RECOG.Spn_godownStingrayVersion2(list);
                 if out2=fail or out2[1]*out2[1]=One(out2[1]) then
                     if InfoLevel(InfoRecog) >= 3 then Print("B\c"); fi;
                     list:=[g,dim,q,g,form];
@@ -5782,6 +5910,56 @@ end;
 ##############################################################################
 ##############################################################################
 
+##############################################################################
+# Constructive Recognition of Sp(4,q)
+##############################################################################
+
+RECOG.FindStdGensSp4 := function(G, q)
+local K;
+    
+    if (q mod 2 = 0) then
+        RECOG.ConstructKEven(G, q);
+    else
+        RECOG.ConstructKOdd(G, q);
+    fi;
+
+end;
+
+RECOG.ConstructKEven := function(G, q)
+
+
+end;
+
+
+RECOG.ConstructKOdd := function(G, q)
+local count, tau, order, centre, n, taun, K0, K;
+
+    count := 0;
+    
+    #TODO: Don't have do compute this right? Always the same two diagonal matrices
+    centre := Centre(G);
+    
+    while count < 30 do
+        tau := PseudoRandom(G);
+        order := Order(tau);
+        if (order mod 2 = 0) then
+            n := order/2;
+            taun := tau^n;
+            if not(taun in centre) then
+                K0 := Centraliser(G,taun);
+                K := DerivedSubgroup(K0);
+                return K;
+            fi;
+        fi;;
+        count := count + 1;
+    od;
+
+    return fail;
+end;
+
+##############################################################################
+##############################################################################
+##############################################################################
 
 ##############################################################################
 # Code from ClassicalMaximal to check BilinearForm
@@ -5970,3 +6148,519 @@ local OldGens, newGens, i, base, fld, d, EleBase, fixbase, B, action, ele, V;
     
     return GroupByGenerators(newGens);
 end;
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+
+##############################################################################################################################
+### Code for unitary groups
+##############################################################################################################################
+
+
+RECOG.FindStdGens_SU := function(sld,IsoDim)
+
+  # Group generated by input must be isomorphic SU(IsoDim,q)
+
+  # gens of sld must be gens for Sp(d,q) in its natural rep with memory
+  # This function calls RECOG.SLn_constructsl2 and then extends
+  # the basis to a basis of the full row space and calls
+  # RECOG.SLn_UpStep often enough. Finally it returns an slp such
+  # that the Sp(d,q) standard generators with respect to this basis are
+  # expressed by the slp in terms of the original generators of sld.
+  local V,b,bas,basi,basit,d,data,ext,fakegens,id,nu,nu2,p,q,resl2,sl2,sl2gens,
+        sl2gensf,sl2genss,sl2stdf,slp,slpsl2std,slptosl2,st,std,stdgens,i,ex,f,form;
+
+  # Some setup:
+  f := FieldOfMatrixGroup(sld);
+  p := Characteristic(f);
+  q := Size(f);
+  ext := DegreeOverPrimeField(f);
+  d := DimensionOfMatrixGroup(sld);
+  form := PreservedForms(sld)[1];
+  form := form!.matrix;
+  if not(IsObjWithMemory(GeneratorsOfGroup(sld)[1])) then
+      sld := GroupWithMemory(sld);
+  fi;
+
+  # First find an Sp2 with the space it acts on;
+  Info(InfoRecog,2,"Finding an SU2...");
+  Display("-----");
+  Display("Start of the GoingDown Algorithm.");
+  data := RECOG.Spn_constructsu2(sld,d,q,form);
+  Display("The GoingDown Algorithm was successful.");
+  Display("-----");
+
+  #bas := ShallowCopy(BasisVectors(Basis(data[2])));
+  #sl2 := data[1];
+  #slptosl2 := SLPOfElms(GeneratorsOfGroup(sl2));
+  #sl2gens := StripMemory(GeneratorsOfGroup(sl2));
+  #V := data[2];
+  #b := Basis(V,bas);
+  #sl2genss := List(sl2gens,x->RECOG.LinearAction(b,f,x));
+
+  #Display("-----");
+  #Display("Solving the base case");
+  #if q in [2,3,4,5,9] then
+  #    Info(InfoRecog,2,"In fact found an SL4...");
+  #    stdgens := RECOG.MakeSL_StdGens(p,ext,4,4).all;
+  #    slpsl2std := RECOG.FindStdGensUsingBSGS(Group(sl2genss),stdgens,
+  #                                            false,false);
+  #    nu := List(sl2gens,x->NullspaceMat(x-One(x)));
+  #    ex := SumIntersectionMat(nu[1],nu[2])[2];
+  #    for i in [3..Length(nu)] do
+  #        ex := SumIntersectionMat(nu[3],ex);
+  #    od;
+  #    Append(bas,ex);
+  #    ConvertToMatrixRep(bas,q);
+  #    basi := bas^-1;
+  #else
+  #    # Now compute the natural SL2 action and run constructive recognition:
+  #    Info(InfoRecog,2,
+  #         "Recognising this SL2 constructively in 2 dimensions...");
+  #    sl2genss := GeneratorsWithMemory(sl2genss);
+  #    if IsEvenInt(q) then
+  #        resl2 := RECOG.RecogniseSL2NaturalEvenChar(Group(sl2genss),f,false);
+  #    else
+  #        resl2 := RECOG.RecogniseSL2NaturalOddCharUsingBSGS(Group(sl2genss),f);
+  #    fi;
+  #    slpsl2std := SLPOfElms(resl2.all);
+  #    bas := resl2.bas * bas;
+  #    # We need the actual transvections:
+  #    slp := SLPOfElms([resl2.s[1],resl2.t[1]]);
+  #    st := ResultOfStraightLineProgram(slp,
+  #                                      StripMemory(GeneratorsOfGroup(sl2)));
+#
+  #    # Extend basis by something invariant under SL2:
+  #    id := IdentityMat(d,f);
+  #    nu := NullspaceMat(StripMemory(st[1]-id));
+  #    nu2 := NullspaceMat(StripMemory(st[2]-id));
+  #    Append(bas,SumIntersectionMat(nu,nu2)[2]);
+  #    ConvertToMatrixRep(bas,q);
+  #    basi := bas^-1;
+  #fi;
+  #Display("Finished the base case.");
+  #Display("-----");
+
+  # Now set up fake generators for keeping track what we do:
+  #fakegens := ListWithIdenticalEntries(Length(GeneratorsOfGroup(sld)),1);
+  #fakegens := GeneratorsWithMemory(fakegens);
+  #sl2gensf := ResultOfStraightLineProgram(slptosl2,fakegens);
+  #sl2stdf := ResultOfStraightLineProgram(slpsl2std,sl2gensf);
+  #std := rec( f := f, d := d, GoalDim := IsoDim, n := 2, bas := bas, basi := basi,
+  #            sld := sld, sldf := fakegens, slnstdf := sl2stdf,
+  #            p := p, ext := ext );
+  #Info(InfoRecog,2,"Going up to SL_d again...");
+  #Display("-----");
+  #Display("Start of the GoingUp Algorithm");
+  #while std.n < std.GoalDim do
+  #    RECOG.SLn_UpStep(std);
+  #od;
+  #Display("The GoingUp Algorithm was successful.");
+  #Display("-----");
+  #return rec( slpstd := SLPOfElms(std.slnstdf),
+  #            bas := std.bas, basi := std.basi );
+  
+  return "Hallo";
+end;
+
+
+
+RECOG.Spn_constructsu2:=function(g,d,q,form)
+  local r,h;
+
+  #r:=RECOG.SLn_constructppd2(g,d,q);
+  #r:=RECOG.SLn_constructppd2TwoStingray(g,d,q);
+  #r:=RECOG.SLn_constructppd2TwoStingrayVersion2(g,d,q);
+  r := RECOG.SUn_constructppdTwoStingray(g,d,q,form);
+  Print("Finished main GoingDown, i.e. we found a stringray element which operates irreducible on a 2 dimensional subspace. \n");
+  Print("Next goal: Find an random element s.t. the two elements generate SU(4,q). \n");
+  Error("here");
+  # Remark D.R.: at this point we know that h is isomorphic to SU(4,q)
+  Print("Succesful. ");
+  Print("Current Dimension: 4\n");
+  Print("Next goal: Generate SL(2,q). \n");
+  if not (q in [2,3,4,5,9]) then
+      Error("here");
+     return RECOG.SLn_godownfromd(h,q,4,d);
+  else
+    Error("here");
+     return RECOG.SLn_exceptionalgodown(h,q,d);
+  #   return ["sorry only SL(4,q)",h];
+  fi;
+end;
+
+##############################################################################
+##############################################################################
+##############################################################################
+
+##############################################################################
+# The GoingDown method for SU:
+##############################################################################
+
+# TODO: Work on comments and documentation
+
+RECOG.CheckNewStingrayGroupSU := function(g1,dim1,base1,g2,dim2,base2,q)
+    local baseSum, b, action1, action2, fld, module;
+
+    baseSum := ShallowCopy(base1);
+    Append(baseSum,base2);
+    
+    if NullspaceMat(baseSum) <> [] then
+        return false;
+    fi;
+    
+    fld := GF(q);
+    b := Basis(VectorSpace(fld,baseSum),baseSum);
+    action1 := List(baseSum,v->Coefficients(b,g1*v));
+    action2 := List(baseSum,v->Coefficients(b,g2*v));
+    module := GModuleByMats( [action1,action2], fld );
+    if MTX.IsIrreducible(module) then
+        return true;
+    else
+        return false;
+    fi;
+end;
+
+
+# Check whether the Stingray element rr acts irreducibel on the
+# <newdim> invariant subspace.
+# Only works for newdim > 2  ?!?!?
+# Are there no ppd stingray elements if newdim = 2?
+RECOG.SmallCheckStingrayElementSU := function(rr,newdim,q,form)
+    local fixbase, V, subspace, e, base, fld, r, module, b, action, n, factors, order, i, j, ppdcheck, restricted;
+    
+    fld := GF(q);
+    r := StripMemory(rr);
+    n := Size(r);
+    
+    if IsIdentityMat(r) then
+        return [false];
+    fi;
+    
+    fixbase := NullspaceMat(r-IdentityMat(n,fld));
+    
+    base := NullspaceMat(TransposedMat(fixbase));
+    
+    if Size(base) <> newdim then
+        #Error("This should not happen.");
+        Display("This should not happen.");
+        return [false];
+    fi;
+    
+    b := Basis(VectorSpace(fld,base),base);
+    restricted := IdentityMat(newdim,fld);
+    for i in [1..newdim] do
+        for j in [1..newdim] do
+            restricted[i,j] := b[i]*form*b[j];
+        od;
+    od;
+    if not(IsEmpty(NullspaceMat(restricted))) then
+        Print("degenerate");
+        return [false];
+    fi;
+    action := List(base,v->Coefficients(b,r*v));
+    module := GModuleByMats( [action], fld );
+    if MTX.IsIrreducible(module) then
+        return [true,base];
+    else
+        return [false];
+    fi;
+
+end;
+
+
+
+# finds first element of a list that is relative prime to all others
+# input: list=[SL(d,q), d, q, SL(n,q)] acting as a subgroup of some big SL(n,q)
+# output: list=[rr, dd] for a ppd(2*dd;q)-element rr
+RECOG.SUn_godownStingrayVersion1:=function(list)
+  local d, CheckFactors, CheckOtherFactors, q, p, g, gg, i, r, pol, factors, degrees, newdim, power, rr, ss,
+  newgroup, colldegrees, exp, count, check, ocount, beta, NiList, Maxi, form;
+ 
+  CheckOtherFactors := function(i, deg, fact)
+  local j;
+    for j in [1..Length(deg)] do
+        if not(j = i) then
+            if RECOG.CheckPolynomialForSelfConjugate(fact[j]) then
+                if (deg[j] mod deg[i] = 0) then
+                    return false;
+                fi;
+            else
+                if (deg[j] mod Int(deg[i]/2) = 0) then
+                    return false;
+                fi;
+            fi;
+        fi;
+    od;
+    return true;
+  end;
+
+  CheckFactors := function(deg, fact)
+  local i;
+      for i in [1..Length(deg)] do
+          if ((deg[i] mod 2) = 0) and RECOG.CheckPolynomialForSelfConjugate(fact[i]) and CheckOtherFactors(i,deg,fact) then
+            return deg[i];
+          fi;
+      od;
+      return fail;
+  end;
+
+  g:=list[1];
+  d:=list[2];
+  q:=list[3];
+  p := Factors(q)[1];
+  gg:=list[4];
+  form := list[5];
+
+  # Overall count. Replace by formula and unequality
+  ocount := 0;
+  while ocount < 200 do
+
+      Info(InfoRecog,2,"Dimension: ",d);
+      #find an element with irreducible action of relative prime dimension to
+      #all other invariant subspaces
+      #count is just safety, if things go very bad
+      count:=0;
+
+      repeat
+         count:=count+1;
+         if InfoLevel(InfoRecog) >= 3 then Print(".\c"); fi;
+         r := PseudoRandom(g);
+         pol := CharacteristicPolynomial(r);
+         factors := Factors(pol);
+         degrees := List(factors,Degree);
+         newdim := CheckFactors(degrees, factors);
+      until (count>200) or (newdim <> fail and (newdim < 2*Log2Int(d)));
+
+      if count>200 then
+         return fail;
+      fi;
+
+      # raise r to a power so that acting trivially outside one invariant subspace
+      NiList := Collected(degrees);
+      NiList := Filtered(NiList,x->not(x[1] = newdim));
+      colldegrees := List(NiList,x->x[1]);
+      NiList := List(NiList,x->x[2]);
+      Maxi := Maximum(NiList);
+      beta := LogInt(Maxi,p);
+      if not(p^beta = Maxi) then
+          beta := beta + 1;
+      fi;
+      
+      # power further to cancel q-part of element order
+      power := Lcm(List(colldegrees, x->q^x-1))*p^beta;
+      #for exp in colldegrees do
+      #  power := power * (q^exp - 1);
+      #od;
+      rr:=r^power;
+      
+      # Check whether the stingray candidate is a stingray element
+      check := RECOG.SmallCheckStingrayElementSp(rr,newdim,q,form);
+      if check[1] then
+          #if not(RECOG.CheckPPDdqe(r,d,q,newdim)) then
+          #  Error("Here");
+          #fi;
+          return [rr,newdim,check[2]];
+      fi;
+      
+      ocount := ocount + 1;
+  od;
+
+  #conjugate rr to hopefully get a smaller dimensional SL
+  #ss:=rr^PseudoRandom(gg);
+  #newgroup:=Group(rr,ss);
+
+  # return [rr,newdim];
+
+end;
+
+
+# finds first element of a list that is relative prime to all others
+# input: list=[SL(d,q), d, q, SL(n,q)] acting as a subgroup of some big SL(n,q)
+# output: list=[rr, dd] for a ppd(2*dd;q)-element rr
+RECOG.SUn_godownStingrayVersion2:=function(list)
+  local d, first, q, p, g, gg, i, r, pol, factors, degrees, newdim, power, rr, ss,
+  newgroup, colldegrees, exp, count, check, ocount, beta, NiList, Maxi, qFactors, irrfact, invbase, form, CheckOtherFactors, CheckFactors, fld, restricted, b, j;
+
+    first := function(list)
+    local i, j, goodElement;
+        for i in [1..Length(list)] do
+            if list[i]>1 and (list[i] mod 2 = 1) then
+                if Gcd(list[i],Product(list)/list[i]) < list[i] then
+                    return i;
+                else
+                    goodElement := true;
+                    for j in [1..Length(list)] do
+                        if not(j = i) and Gcd(list[i],list[j]) = list[i] then
+                            goodElement := false;
+                            break;
+                        fi;
+                    od;
+                    if goodElement then
+                        return i;
+                    fi;
+                fi;
+            fi;
+        od;
+        return fail;
+    end;
+
+  g:=list[1];
+  d:=list[2];
+  q:=list[3];
+  qFactors:=Factors(q);
+  p := Factors(q)[1];
+  gg:=list[4];
+  form := list[5];
+  fld := GF(q);
+
+  # Overall count. Replace by formula and unequality
+  ocount := 0;
+  while ocount < 100 do
+
+      Info(InfoRecog,2,"Dimension: ",d);
+      #find an element with irreducible action of relative prime dimension to
+      #all other invariant subspaces
+      #count is just safety, if things go very bad
+      count:=0;
+
+      repeat
+         count:=count+1;
+         if InfoLevel(InfoRecog) >= 3 then Print(".\c"); fi;
+         r:=PseudoRandom(g);
+         pol:=CharacteristicPolynomial(r);
+         factors:=Factors(pol);
+         degrees:=List(factors,Degree);
+         newdim:=first(degrees);
+      until (count>200) or (newdim <> fail and (degrees[newdim] < Maximum([2*Log2Int(d),3])));
+      # Be careful if Log2Int(d) = 2! In this case we search for stingray elements with k < 2. Hence use newdim < Maximum([Log2Int(d),3])
+
+      if count>200 then
+         return fail;
+      fi;
+      
+      # Split result from first:
+      irrfact := factors[newdim];
+      newdim := degrees[newdim];
+
+      # Check whether the stingray candidate is a ppd-stingray element
+      check := RECOG.IsPpdStingrayElement(p,Length(qFactors),newdim,irrfact);
+      if check then
+      
+          # raise r to a power so that acting trivially outside one invariant irreducible subspace
+          NiList := Collected(degrees);
+          NiList := Filtered(NiList,x->not(x[1] = newdim));
+          colldegrees := List(NiList,x->x[1]);
+          NiList := List(NiList,x->x[2]);
+          Maxi := Maximum(NiList);
+          beta := LogInt(Maxi,p);
+          if not(p^beta = Maxi) then
+              beta := beta + 1;
+          fi;
+          
+          # power further to cancel q-part of element order
+          power := Lcm(List(colldegrees, x->q^x-1))*p^beta;
+          #for exp in colldegrees do
+          #  power := power * (q^exp - 1);
+          #od;
+          rr:=r^power;
+    
+          invbase := NullspaceMat(TransposedMat(NullspaceMat(StripMemory(rr)-IdentityMat(Size(rr),GF(q)))));
+          
+          b := Basis(VectorSpace(fld,invbase),invbase);
+          restricted := IdentityMat(newdim,fld);
+          for i in [1..newdim] do
+              for j in [1..newdim] do
+                  restricted[i,j] := b[i]*form*b[j];
+              od;
+          od;
+          
+          if IsEmpty(NullspaceMat(restricted)) then
+              return [rr,newdim,invbase];
+          fi;
+          
+      fi;
+      
+      ocount := ocount + 1;
+  od;
+
+  #conjugate rr to hopefully get a smaller dimensional SL
+  #ss:=rr^PseudoRandom(gg);
+  #newgroup:=Group(rr,ss);
+
+  # return [rr,newdim];
+  
+  return fail;
+
+end;
+
+
+
+RECOG.SUn_constructppdTwoStingray:=function(g,dim,q,form)
+  local out, list, out2, currentdim;
+
+  Print("Current Dimension: ");
+  Print(dim);
+  Print("\n");
+
+  list:=[g,dim,q,g,form];
+  currentdim := dim;
+  repeat
+     out:=RECOG.SUn_godownStingrayVersion2(list);
+     if out=fail or out[1]*out[1]=One(out[1]) then
+        if InfoLevel(InfoRecog) >= 3 then Print("B\c"); fi;
+        Print("Restart. \n");
+        Print("Current Dimension: ");
+        Print(dim);
+        Print("\n");
+        list:=[g,dim,q,g,form];
+        out:=fail;
+     else
+        if out[2]>=2 then
+           repeat
+                out2:=RECOG.SUn_godownStingrayVersion2(list);
+                if out2=fail or out2[1]*out2[1]=One(out2[1]) then
+                    if InfoLevel(InfoRecog) >= 3 then Print("B\c"); fi;
+                    list:=[g,dim,q,g,form];
+                    out2:=fail;
+                fi;
+           until out2<>fail and out2[2] >= 2;
+           if RECOG.CheckNewStingrayGroupSU(out[1],out[2],out[3],out2[1],out2[2],out2[3],q) then
+                list:=[Group(out[1],out2[1]),out[2]+out2[2],q,g,form];
+                currentdim := list[2];
+                
+                Print("Debugg Info:\n");
+                Print("Dimension FirstElement: ");
+                Print(out[2]);
+                Print("\n");
+                Print("Dimension SecondElement: ");
+                Print(out2[2]);
+                Print("\n");
+                Print("End Debugg Info. \n");
+                
+                Print("New Dimension: ");
+                Print(out[2]+out2[2]);
+                Print("\n");
+           else
+                if InfoLevel(InfoRecog) >= 3 then Print("B\c"); fi;
+                Print("Restart. \n");
+                Print("Current Dimension: ");
+                Print(dim);
+                Print("\n");
+                list:=[g,dim,q,g,form];
+                out:=fail;
+           fi;
+        fi;
+     fi;
+  until currentdim=6;
+
+  return list[1];
+
+end;
+
+
+##############################################################################
+##############################################################################
+##############################################################################
